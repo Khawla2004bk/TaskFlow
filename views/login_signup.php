@@ -66,6 +66,7 @@
                     <path d="M11 18H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </div>
+            testing
             <h3 class="text-2xl font-bold mt-8 mb-4">Organize. Prioritize. Succeed.</h3>
             <p class="text-center">Experience task management like never before with our cutting-edge platform.</p>
         </div>

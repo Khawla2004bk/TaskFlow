@@ -20,6 +20,7 @@ CREATE TABLE Roles (
 );
 
 CREATE TABLE TaskTypes (
+    
     id INT AUTO_INCREMENT PRIMARY KEY,
     name ENUM('bug', 'feature', 'basic') NOT NULL,
     description TEXT
