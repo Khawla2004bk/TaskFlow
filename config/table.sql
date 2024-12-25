@@ -4,6 +4,7 @@ USE taskflow;
 CREATE TABLE Users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
+    lastname VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -60,9 +61,9 @@ INSERT INTO TaskStatus (name, description) VALUES
 ('done', 'Tâche terminée');
 
 INSERT INTO Users (name, email, password, role) VALUES
-('Admin User', 'admin@example.com', 'admin123', 1),
-('John Doe', 'john@example.com', 'user1', 2),
-('Jane Smith', 'jane@example.com', 'user2', 2);
+('Admin', 'User', 'admin@example.com', 'admin123', 1),
+('John', 'Doe', 'john@example.com', 'user1', 2),
+('Jane', 'Smith', 'jane@example.com', 'user2', 2);
 
 INSERT INTO Tasks (title, description, type, status, assigned_user, due_date) VALUES
 ('Corriger le bug de connexion', 'Les utilisateurs ne peuvent pas se connecter sur Firefox', 1, 1, 2, '2024-02-01'),
