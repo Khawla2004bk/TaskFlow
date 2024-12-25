@@ -100,11 +100,12 @@ taskForm.addEventListener('submit', e => {
         description: taskForm.description.value,
         priority: taskForm.priority.value,
         type: taskForm.type.value,
-        status: taskForm.status.value,
         dueDate: taskForm.dueDate.value,
     };
 
     addTask(task);
+    console.log(task);
+    
     hideModal();
 });
 
