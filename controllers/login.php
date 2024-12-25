@@ -43,14 +43,26 @@ $connexion = new Connexion();
 $loginController = new LoginController($connexion);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $_SESSION['error'] = 'Requête invalide.';
+        header('Location: ../views/login.php');
+        exit();
+    }
+
     if (empty($_POST['email']) || empty($_POST['password'])) {
         $_SESSION['error'] = 'Veuillez remplir tous les champs.';
         header('Location: ../views/login.php');
         exit();
     }
-    
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+
+    if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['error'] = 'Format d\'email invalide.';
+        header('Location: ../views/login.php');
+        exit();
+    }
+
+    $email = htmlspecialchars(string: trim($_POST['email']));
+    $password = trim($_POST['password']);
 
     $response = $loginController->login($email, $password);
 
