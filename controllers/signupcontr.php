@@ -1,8 +1,10 @@
-
 <?php
-// require_once __DIR__ . "../config/connexion.php";
-// require_once __DIR__ . "../config/session.php";
-// require_once __DIR__ . "../models/user.php";
+// File: RegisterController.php
+
+// Uncomment and correct the require statements
+require_once __DIR__ . "/../config/connexion.php";
+require_once __DIR__ . "/../config/session.php";
+require_once __DIR__ . "/../models/user.php";
 
 class RegisterController {
     private $connexion;
@@ -28,10 +30,13 @@ class RegisterController {
                 return ['success' => false, 'message' => 'Cette adresse email est déjà utilisée.'];
             }
 
+            // Hash the password before storing it
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
             $stmt = $this->connexion->getPdo()->prepare(
                 "INSERT INTO Users (name, email, password, role) VALUES (?, ?, ?, ?)"
             );
-            $result = $stmt->execute([$name, $email, $password, $role]);
+            $result = $stmt->execute([$name, $email, $hashedPassword, $role]);
 
             if ($result) {
                 return ['success' => true, 'message' => 'Inscription réussie.'];
@@ -43,31 +48,4 @@ class RegisterController {
             return ['success'=> false, 'message' => "Erreur lors de l'inscription: " . $e->getMessage()];
         }
     }
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        $_SESSION['error'] = 'Requête invalide.';
-        header('Location: index.php?page=signup');
-        exit();
-    }
-
-    $connexion = new Connexion();
-    $registerController = new RegisterController($connexion);
-
-    $response = $registerController->signup(
-        $_POST['name'], 
-        $_POST['email'], 
-        $_POST['password'],
-        $_POST['role']
-    );
-
-    if ($response['success']) {
-        $_SESSION['success'] = $response['message'];
-        header('Location: index.php?page=login');
-    } else {
-        $_SESSION['error'] = $response['message'];
-        header('Location: index.php?page=login');
-    }
-    exit();
 }

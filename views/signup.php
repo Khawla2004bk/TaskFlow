@@ -52,38 +52,69 @@ include_once __DIR__ . "/../controllers/signupcontr.php";
 </head>
 
 <body class="min-h-screen flex items-center justify-center p-4">
+    <?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    session_start(); // Ensure session is started
+
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $_SESSION['error'] = 'Requête invalide.';
+        header('Location: index.php?page=login_signup');
+        exit();
+    }
+
+    require_once __DIR__ . '/../config/connexion.php';
+    $connexion = new Connexion();
+    $registerController = new RegisterController($connexion);
+
+    $response = $registerController->signup(
+        $_POST['name'], 
+        $_POST['email'], 
+        $_POST['password'],
+        isset($_POST['role']) ? $_POST['role'] : 2
+    );
+
+    if ($response['success']) {
+        $_SESSION['success'] = $response['message'];
+        header('Location: index.php?page=signup');
+    } else {
+        $_SESSION['error'] = $response['message'];
+        header('Location: index.php?page=signup');
+    }
+    exit();
+}
+?>
     <div id="particles-js" class="absolute inset-0"></div>
     <div class="glass w-full max-w-4xl flex rounded-xl overflow-hidden">
         <div class="w-1/2 bg-white p-12 flex flex-col justify-center">
             <h2 class="text-4xl font-bold mb-6 text-gray-800">Create Your Account</h2>
            
             <p class="text-gray-600 mb-8">Elevate your productivity to new heights.</p>
-            <form id="loginForm" class="space-y-6" action="../index.php?action=signupcontr" method="post">
-            <div>
-                <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
-                <input type="text" id="name" name="name" required class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-            </div>
-            <div>
-                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                <input type="email" id="email" name="email" required class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-            </div>
-            <div>
-                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                <input type="password" id="password" name="password" required class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-            </div>
-            <div>
-                <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
-                <select id="role" name="role" required class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                    <option value="1">Admin</option>
-                    <option value="2">User</option>
-                </select>
-            </div>
-            <div>
-                <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Sign Up
-                </button>
-            </div>
-            </form>
+            <form id="signupForm" class="space-y-6" action="signup.php" method="post">
+    <div>
+        <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+        <input type="text" id="name" name="name" required class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+    </div>
+    <div>
+        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+        <input type="email" id="email" name="email" required class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+    </div>
+    <div>
+        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+        <input type="password" id="password" name="password" required class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+    </div>
+    <div>
+        <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
+        <select id="role" name="role" required class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+            <option value="1">Admin</option>
+            <option value="2">User</option>
+        </select>
+    </div>
+    <div>
+        <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Sign Up
+        </button>
+    </div>
+</form>
             <p class="mt-4 text-center text-sm text-gray-600">
                 Already have an account?
                 <a href="index.php?page=login" id="switchToSignup" class="font-medium text-indigo-600 hover:text-indigo-500">log in</a>
