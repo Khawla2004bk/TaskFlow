@@ -1,32 +1,41 @@
 <?php
+class DatabaseConfig {
+    private const HOST = 'localhost';
+    private const USERNAME = 'root';
+    private const PASSWORD = '';
+    private const DBNAME = 'taskflow';
 
-class Connexion {
-    private $pdo;
-    private $host;
-    private $dbname;
-    private $username;
-    private $password;
-    
+    private static ?PDO $instance = null;
 
-    public function __construct($host = 'localhost', $dbname = 'taskflow', $username = 'root', $password = '') {
+    private function __construct() {}
 
-        $this->host = $host;
-        $this->dbname = $dbname;
-        $this->username = $username;
-        $this->password = $password;
+    public static function getConnection(): PDO {
+        if (self::$instance === null) {
+            try {
+                $dsn = "mysql:host=" . self::HOST . ";dbname=" . self::DBNAME . ";charset=utf8mb4";
+                $options = [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false,
+                    PDO::MYSQL_ATTR_FOUND_ROWS => true
+                ];
 
-        try {
-            $this->pdo = new PDO("mysql:host=$this->host;dbname=$this->dbname", $this->username, $this->password, [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-            ]);
-        } catch (PDOException $e) {
-            echo "Erreur de connexion: " . $e->getMessage();
-            throw new Exception("Connexion Impossible à la base de données");
+                self::$instance = new PDO($dsn, self::USERNAME, self::PASSWORD, $options);
+                
+                self::$instance->exec('SET NAMES utf8mb4');
+            } catch (PDOException $e) {
+                error_log("Erreur de connexion à la base de données : " . $e->getMessage());
+                throw new Exception("Impossible de se connecter à la base de données.");
+            }
         }
+
+        return self::$instance;
     }
 
-    public function getPdo() {
-        return $this->pdo;
+    private function __clone() {}
+
+    public static function closeConnection() {
+        self::$instance = null;
     }
 }
+?>
