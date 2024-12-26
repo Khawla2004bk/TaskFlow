@@ -10,41 +10,12 @@ include_once __DIR__ . "/../controllers/logincontr.php";
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaskMaster Pro</title>
+    <link rel="stylesheet" href="assets/loginstyle.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .glass {
-            background: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.18);
-        }
-
-        .animate-float {
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translatey(0px);
-            }
-
-            50% {
-                transform: translatey(-20px);
-            }
-
-            100% {
-                transform: translatey(0px);
-            }
-        }
-    </style>
+    <!-- <style>
+      
+    </style> -->
 </head>
 
 <body class="min-h-screen flex items-center justify-center p-4">
@@ -71,7 +42,7 @@ include_once __DIR__ . "/../controllers/logincontr.php";
             </form>
             <p class="mt-4 text-center text-sm text-gray-600">
                 Don't have an account?
-                <a href="signup.php" id="switchToSignup" class="font-medium text-indigo-600 hover:text-indigo-500">Sign up</a>
+                <a href="index.php?page=signup" id="switchToSignup" class="font-medium text-indigo-600 hover:text-indigo-500">Sign up</a>
             </p>
         </div>
         <div class="w-1/2 p-12 flex flex-col justify-center items-center text-white">
@@ -93,7 +64,7 @@ include_once __DIR__ . "/../controllers/logincontr.php";
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <script src="../assets/script.js"></script>
+    <script src="assets/script.js"></script>
 </body>
 
 </html>

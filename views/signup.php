@@ -86,7 +86,7 @@ include_once __DIR__ . "/../controllers/signupcontr.php";
             </form>
             <p class="mt-4 text-center text-sm text-gray-600">
                 Already have an account?
-                <a href="login.php" id="switchToSignup" class="font-medium text-indigo-600 hover:text-indigo-500">log in</a>
+                <a href="index.php?page=login" id="switchToSignup" class="font-medium text-indigo-600 hover:text-indigo-500">log in</a>
             </p>
         </div>
         <div class="w-1/2 p-12 flex flex-col justify-center items-center text-white">
