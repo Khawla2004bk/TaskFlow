@@ -38,7 +38,7 @@
                 <a href="#" class="text-white hover:text-teal-400 transition-colors duration-300">Home</a>
                 <a href="#" class="text-white hover:text-teal-400 transition-colors duration-300">Features</a>
                 <a href="#" class="text-white hover:text-teal-400 transition-colors duration-300">Pricing</a>
-                <a href="?page=login_signup" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300" id="signup">Sign Up</a>
+                <a href="?page=login" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300" id="signup">Sign Up</a>
             </div>
         </nav>
     </header>
@@ -50,7 +50,7 @@
             Experience the future of task management with NexTask. Seamlessly organize, prioritize, and conquer your goals like never before.
         </p>
         <div class="flex justify-center space-x-6">
-            <a href="?page=login_signup" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-8 rounded-full text-lg transition-colors duration-300 transform hover:scale-105">
+            <a href="?page=login" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-8 rounded-full text-lg transition-colors duration-300 transform hover:scale-105">
                 Get Started
             </a>
             <a href="#" class="bg-transparent border-2 border-white text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-white hover:text-purple-900 transition-colors duration-300 transform hover:scale-105">

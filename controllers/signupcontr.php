@@ -1,8 +1,8 @@
-<?php
 
-require_once __DIR__ . "../config/connexion.php";
-require_once __DIR__ . "../config/session.php";
-require_once __DIR__ . "../models/user.php";
+<?php
+// require_once __DIR__ . "../config/connexion.php";
+// require_once __DIR__ . "../config/session.php";
+// require_once __DIR__ . "../models/user.php";
 
 class RegisterController {
     private $connexion;
@@ -48,7 +48,7 @@ class RegisterController {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         $_SESSION['error'] = 'Requête invalide.';
-        header('Location: index.php?page=login_signup');
+        header('Location: index.php?page=signup');
         exit();
     }
 
@@ -64,10 +64,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($response['success']) {
         $_SESSION['success'] = $response['message'];
-        header('Location: index.php?page=login_signup');
+        header('Location: index.php?page=login');
     } else {
         $_SESSION['error'] = $response['message'];
-        header('Location: index.php?page=login_signup');
+        header('Location: index.php?page=login');
     }
     exit();
 }
