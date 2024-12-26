@@ -1,7 +1,6 @@
 <?php
-include_once __DIR__ . "/../config/session.php";
+// include_once __DIR__ . "/../config/session.php";
 include_once __DIR__ . "/../controllers/signupcontr.php";
-// include('controllers/signupcontr.php');
 // include_once __DIR__ . "../config/connexion.php";
 // include "controllers/login.php";
 // include "controllers/signup.php";
@@ -56,34 +55,50 @@ include_once __DIR__ . "/../controllers/signupcontr.php";
     <div class="glass w-full max-w-4xl flex rounded-xl overflow-hidden">
         <div class="w-1/2 bg-white p-12 flex flex-col justify-center">
             <h2 class="text-4xl font-bold mb-6 text-gray-800">Create Your Account</h2>
-           
+            <?php if ($error): ?>
+                <div class="error-message"><?= htmlspecialchars($error) ?></div>
+            <?php endif; ?>
             <p class="text-gray-600 mb-8">Elevate your productivity to new heights.</p>
-            <form id="loginForm" class="space-y-6" action="../index.php?action=signupcontr" method="post">
-            <div>
-                <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+            <form method="post" action="index.php?action=signupcontr">
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+            
+            <div class="form-group">
+                <label for="name" class="block text-sm font-medium text-gray-700">Nom d'utilisateur</label>
                 <input type="text" id="name" name="name" required class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
             </div>
-            <div>
+            
+            <div class="form-group">
                 <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
                 <input type="email" id="email" name="email" required class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
             </div>
-            <div>
-                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+            
+            <div class="form-group">
+                <label for="password" class="block text-sm font-medium text-gray-700">Mot de passe</label>
                 <input type="password" id="password" name="password" required class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
             </div>
-            <div>
-                <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
-                <select id="role" name="role" required class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                    <option value="1">Admin</option>
-                    <option value="2">User</option>
+            
+            <div class="form-group">
+                <label for="confirm_password" class="block text-sm font-medium text-gray-700">Confirmer le mot de passe</label>
+                <input type="password" id="confirm_password" name="confirm_password" required class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            
+            <div class="form-group">
+                <label for="role" class="block text-sm font-medium text-gray-700">Rôle</label>
+                <select name="role" id="role" required class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <?php foreach (Role::getAllRoles() as $roleValue => $roleLabel): ?>
+                        <option value="<?= $roleValue ?>" <?= $roleValue == Role::USER ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($roleLabel) ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
             </div>
+            
             <div>
                 <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Sign Up
                 </button>
             </div>
-            </form>
+        </form>
             <p class="mt-4 text-center text-sm text-gray-600">
                 Already have an account?
                 <a href="index.php?page=login" id="switchToSignup" class="font-medium text-indigo-600 hover:text-indigo-500">log in</a>

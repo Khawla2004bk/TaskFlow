@@ -4,7 +4,6 @@ class Role {
     // Constantes pour les rôles
     public const ADMIN = 1;
     public const USER = 2;
-    public const GUEST = 3;
 
     // Définition des permissions par rôle
     private const PERMISSIONS = [
@@ -23,9 +22,6 @@ class Role {
             'edit_own_task',
             'delete_own_task'
         ],
-        self::GUEST => [
-            'view_public_content'
-        ]
     ];
 
     /**
@@ -55,7 +51,6 @@ class Role {
         return match($role) {
             self::ADMIN => 'Administrateur',
             self::USER => 'Utilisateur',
-            self::GUEST => 'Invité',
             default => 'Rôle inconnu'
         };
     }
@@ -69,7 +64,6 @@ class Role {
         return [
             self::ADMIN => self::getRoleLabel(self::ADMIN),
             self::USER => self::getRoleLabel(self::USER),
-            self::GUEST => self::getRoleLabel(self::GUEST)
         ];
     }
 }
