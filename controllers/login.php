@@ -1,16 +1,18 @@
 <?php
-session_start();
 
-require_once "../config/connexion.php";
+require_once "C:/xampp/htdocs/TaskFlow/config/connexion.php";
 
-class LoginController {
+class LoginController
+{
     private $pdo;
 
-    public function __construct(Connexion $connexion) {
+    public function __construct(Connexion $connexion)
+    {
         $this->pdo = $connexion->getPdo();
     }
 
-    public function login($email, $password) {
+    public function login($email, $password)
+    {
         try {
             $stmt = $this->pdo->prepare("SELECT * FROM Users WHERE email = ?");
             $stmt->execute([$email]);
@@ -27,7 +29,6 @@ class LoginController {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_email'] = $user['email'];
             $_SESSION['user_name'] = $user['name'];
-            $_SESSION['user_lastname'] = $user['lastname'];
             $_SESSION['user_role'] = $user['role'];
             $_SESSION['is_admin'] = $user['role'] === 1;
 
@@ -69,8 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($response['success']) {
         header('Location: ../views/showTask.php');
         exit();
-    }
-    else {
+    } else {
         $_SESSION['error'] = $response['message'];
         header('Location: ../views/login.php');
         exit();

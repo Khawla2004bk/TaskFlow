@@ -1,3 +1,9 @@
+<?php
+include_once 'config/session.php';
+include_once 'config/connexion.php';
+include_once 'config/helper.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

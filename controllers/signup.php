@@ -1,8 +1,8 @@
 <?php
 
-require_once "../config/connexion.php";
-require_once "../config/session.php";
-require_once '../models/user.php';
+require_once __DIR__ . "../config/connexion.php";
+require_once __DIR__ . "../config/session.php";
+require_once __DIR__ . "../models/user.php";
 
 class RegisterController {
     private $connexion;
@@ -11,8 +11,8 @@ class RegisterController {
         $this->connexion = $connexion;
     }
 
-    public function signup($name, $lastname, $email, $password) {
-        if (empty($name) || empty($lastname) || empty($email) || empty($password)) {
+    public function signup($name, $email, $password) {
+        if (empty($name) || empty($email) || empty($password)) {
             return ['success' => false, 'message' => 'Veuillez remplir tous les champs.'];
         }
 
@@ -22,7 +22,7 @@ class RegisterController {
 
         try {
             $user = new User($this->connexion);
-            $result = $user->CreateUser($name, $lastname, $email, $password);
+            $result = $user->CreateUser($name, $email, $password);
 
             if ($result) {
                 return ['success' => true, 'message' => 'Inscription reussie.'];
@@ -39,7 +39,7 @@ class RegisterController {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         $_SESSION['error'] = 'Requête invalide.';
-        header('Location: ../views/login_signup.php');
+        header('Location: index.php?page=login_signup');
         exit();
     }
 
@@ -48,17 +48,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $response = $registerController->signup(
         $_POST['name'], 
-        $_POST['lastname'],
         $_POST['email'], 
         $_POST['password']
     );
 
     if ($response['success']) {
         $_SESSION['success'] = $response['message'];
-        header('Location: ../views/login_signup.php');
+        header('Location: index.php?page=login_signup');
     } else {
         $_SESSION['error'] = $response['message'];
-        header('Location: ../views/login_signup.php');
+        header('Location: index.php?page=login_signup');
     }
     exit();
 }

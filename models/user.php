@@ -7,7 +7,7 @@ class User {
         $this->connexion = $connexion;
     }
 
-    public function CreateUser($name, $lastname, $email, $password) {
+    public function CreateUser($name, $email, $password, $role = 2) {
         $stmt = $this->connexion->getPdo()->prepare("SELECT * FROM Users WHERE email = ?");
         $stmt->execute([$email]);
 
@@ -15,8 +15,8 @@ class User {
             return false;
         }
 
-        $stmt = $this->connexion->getPdo()->prepare("INSERT INTO Users (name, lastname, email, password VALUES (?, ?, ?, ?)");
+        $stmt = $this->connexion->getPdo()->prepare("INSERT INTO Users (name, email, password, role) VALUES (?, ?, ?, ?)");
 
-        return $stmt->execute([$name, $lastname, $email, $password]);
+        return $stmt->execute([$name, $email, $password, $role]);
     }
 }

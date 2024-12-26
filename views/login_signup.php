@@ -1,5 +1,13 @@
+<?php
+// include_once("../config/session.php");
+// include_once("../config/connexion.php");
+// include_once("../controllers/login.php");
+// include_once("../controllers/signup.php");
+?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +19,7 @@
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
+
         .glass {
             background: rgba(255, 255, 255, 0.25);
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -19,23 +28,34 @@
             border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.18);
         }
+
         .animate-float {
             animation: float 6s ease-in-out infinite;
         }
+
         @keyframes float {
-            0% { transform: translatey(0px); }
-            50% { transform: translatey(-20px); }
-            100% { transform: translatey(0px); }
+            0% {
+                transform: translatey(0px);
+            }
+
+            50% {
+                transform: translatey(-20px);
+            }
+
+            100% {
+                transform: translatey(0px);
+            }
         }
     </style>
 </head>
+
 <body class="min-h-screen flex items-center justify-center p-4">
     <div id="particles-js" class="absolute inset-0"></div>
     <div class="glass w-full max-w-4xl flex rounded-xl overflow-hidden">
         <div class="w-1/2 bg-white p-12 flex flex-col justify-center">
             <h2 class="text-4xl font-bold mb-6 text-gray-800">Welcome to TaskMaster Pro</h2>
             <p class="text-gray-600 mb-8">Elevate your productivity to new heights.</p>
-            <form id="loginForm" class="space-y-6" action="index.php?action=login" method="post">
+            <form id="loginForm" class="space-y-6" action="../index.php?action=login" method="post">
                 <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
@@ -52,19 +72,19 @@
                 </div>
             </form>
             <p class="mt-4 text-center text-sm text-gray-600">
-                Don't have an account? 
+                Don't have an account?
                 <a href="#" id="switchToSignup" class="font-medium text-indigo-600 hover:text-indigo-500">Sign up</a>
             </p>
         </div>
         <div class="w-1/2 p-12 flex flex-col justify-center items-center text-white">
             <div class="animate-float">
                 <svg class="w-48 h-48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3.5 5.5L5 7L7.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M3.5 11.5L5 13L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M3.5 17.5L5 19L7.5 16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M11 6H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M11 12H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M11 18H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3.5 5.5L5 7L7.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M3.5 11.5L5 13L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M3.5 17.5L5 19L7.5 16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M11 6H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M11 12H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M11 18H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
             </div>
             testing
@@ -75,6 +95,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <script src="assets/script.js"></script>
+    <script src="../assets/script.js"></script>
 </body>
+
 </html>
