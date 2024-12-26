@@ -53,11 +53,7 @@ include_once __DIR__ . "/../controllers/logincontr.php";
         <div class="w-1/2 bg-white p-12 flex flex-col justify-center">
             <h2 class="text-4xl font-bold mb-6 text-gray-800">Welcome to TaskMaster Pro</h2>
             <p class="text-gray-600 mb-8">Elevate your productivity to new heights.</p>
-<<<<<<< HEAD:views/login_signup.php
-            <form id="loginForm" class="space-y-6" action="index.php?action=login" method="post">
-=======
             <form id="loginForm" class="space-y-6" action="../index.php?action=logincontr" method="post">
->>>>>>> 4bccebd73a34b0e861e59b7090b1a8787ec68cc1:views/login.php
                 <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700">Email</label>

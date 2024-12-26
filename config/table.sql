@@ -1,6 +1,12 @@
 CREATE DATABASE IF NOT EXISTS taskflow;
 USE taskflow;
 
+CREATE TABLE Roles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name ENUM('admin', 'user') NOT NULL,
+    description TEXT
+);
+
 CREATE TABLE Users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -12,11 +18,6 @@ CREATE TABLE Users (
     FOREIGN KEY (role) REFERENCES Roles(id)
 );
 
-CREATE TABLE Roles (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name ENUM('admin', 'user') NOT NULL,
-    description TEXT
-);
 
 CREATE TABLE TaskTypes (
     
@@ -37,7 +38,7 @@ CREATE TABLE Tasks (
     description TEXT,
     type INT NOT NULL,
     status INT NOT NULL,
-    assigned_user INT,
+    assigned_user_id INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     due_date DATE,
@@ -65,7 +66,7 @@ INSERT INTO Users (name, email, password, role) VALUES
 ('John Doe', 'john@example.com', 'user1', 2),
 ('Jane Smith', 'jane@example.com', 'user2', 2);
 
-INSERT INTO Tasks (title, description, type, status, assigned_user, due_date) VALUES
+INSERT INTO Tasks (title, description, type, status, assigned_user_id, due_date) VALUES
 ('Corriger le bug de connexion', 'Les utilisateurs ne peuvent pas se connecter sur Firefox', 1, 1, 2, '2024-02-01'),
 ('Ajouter la fonction de recherche', 'Implémenter une barre de recherche dans le header', 2, 2, 3, '2024-02-15'),
 ('Mettre à jour la documentation', 'Mettre à jour la documentation utilisateur', 3, 3, 2, '2024-01-30'),
