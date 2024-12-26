@@ -1,8 +1,8 @@
 <?php
-// include_once("../config/session.php");
-// include_once("../config/connexion.php");
-// include_once("../controllers/login.php");
-// include_once("../controllers/signup.php");
+// include_once __DIR__ . "../config/session.php";
+// include_once __DIR__ . "../config/connexion.php";
+include_once __DIR__ . "../controllers/login.php";
+include_once __DIR__ . "../controllers/signup.php";
 ?>
 
 <!DOCTYPE html>
