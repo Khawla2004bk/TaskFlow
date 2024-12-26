@@ -1,6 +1,6 @@
 <?php
-
-require_once "C:/xampp/htdocs/TaskFlow/config/connexion.php";
+// include("config/connexion.php");
+include_once __DIR__ . "/../config/connexion.php";
 
 class LoginController
 {
@@ -76,3 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 }
+
+
+
