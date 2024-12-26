@@ -1,8 +1,8 @@
 <?php
 
-require_once __DIR__ . "../config/connexion.php";
-require_once __DIR__ . "../config/session.php";
-require_once __DIR__ . "../models/user.php";
+require_once __DIR__ . "/../config/connexion.php";
+require_once __DIR__ . "/../config/session.php";
+require_once __DIR__ . "/../models/user.php";
 
 class RegisterController {
     private $connexion;
