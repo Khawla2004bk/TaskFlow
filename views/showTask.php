@@ -11,8 +11,8 @@ include_once __DIR__ . '/../config/helper.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaskMaster Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/style.css">
-    <style>
+    <link rel="stylesheet" href="../assets/style.css">
+    <!-- <style>
         .form-container {
             display: none;
             position: fixed;
@@ -248,7 +248,7 @@ include_once __DIR__ . '/../config/helper.php';
         .task-due-date {
             color: #6c757d;
         }
-    </style>
+    </style> -->
 </head>
     <header class="header">
         <div class="header-content">
@@ -311,6 +311,15 @@ include_once __DIR__ . '/../config/helper.php';
                     </select>
                 </div>
 
+                <div class="form-group">
+                    <label class="form-label" for="status">Status</label>
+                    <select id="status" class="form-select">
+                        <option value="todo">To Do</option>
+                        <option value="doing">Doing</option>
+                        <option value="done">Done</option>
+                    </select>
+                </div>
+
                 
                 <div class="form-group">
                     <label class="form-label" for="dueDate">Due Date</label>
@@ -328,7 +337,7 @@ include_once __DIR__ . '/../config/helper.php';
 
    
     
-    <script src="assets/showtask.js" ></script>
+    <script src="../assets/showtask.js" ></script>
 
    
 </body>

@@ -13,8 +13,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         if ($userController->login($email, $password)) {
-            header('Location: ../views/showTask.php');
-            exit();
+            $user = $userController->getUser();
+            
+            if ($user->getRole() === 1) {
+                header('Location: ../views/admin.php');
+                exit();
+            } else {
+                header('Location: ../views/showTask.php');
+                exit();
+            }
         } else {
             $error = 'Identifiants incorrects.';
         }
@@ -97,6 +104,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 //         exit();
 //     }
 // }
-
-
-

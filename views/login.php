@@ -1,5 +1,4 @@
 <?php
-// include("controllers/logincontr.php");
 include_once __DIR__ . "/../controllers/logincontr.php";
 ?>
 
