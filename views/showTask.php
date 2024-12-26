@@ -1,7 +1,7 @@
 <?php
-include_once 'config/session.php';
-include_once 'config/connexion.php';
-include_once 'config/helper.php';
+include_once __DIR__ . '/../config/session.php';
+include_once __DIR__ . '/../config/connexion.php';
+include_once __DIR__ . '/../config/helper.php';
 ?>
 
 <!DOCTYPE html>
@@ -250,7 +250,6 @@ include_once 'config/helper.php';
         }
     </style>
 </head>
-<>
     <header class="header">
         <div class="header-content">
             <a href="#" class="logo">TaskFlow</a>

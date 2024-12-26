@@ -1,6 +1,27 @@
 <?php
 // include("config/connexion.php");
 include_once __DIR__ . "/../config/connexion.php";
+include_once __DIR__ . "/../models/user.php";
+require_once __DIR__ . '/userController.php';
+
+$userController = new UserController();
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    try {
+        if ($userController->login($email, $password)) {
+            header('Location: ../views/showTask.php');
+            exit();
+        } else {
+            $error = 'Identifiants incorrects.';
+        }
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+    }
+}
 
 // class LoginController
 // {
