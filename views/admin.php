@@ -6,6 +6,7 @@
     <title>TaskMaster Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .form-container {
             display: none;
@@ -242,14 +243,33 @@
         .task-due-date {
             color: #6c757d;
         }
+        #plusicon{
+            background-color: royalblue ;
+            border-radius: 100%;
+            padding: 2px;
+            width: 30px;
+            color: white;
+            text-align: center;
+            font-size: 19px;  
+            width: 36px;
+            height: 38px; 
+        }
+        #email-plus{
+            display: flex;
+            flex-direction: row;
+            gap: 2px;
+            
+        }
+       
+
     </style>
 </head>
-<>
+<body>
     <header class="header">
         <div class="header-content">
-            <a href="#" class="logo">TaskFlow</a>
+            <a href="#" class="logo">TaskMaster Pro</a>
             <button id="addTaskBtn" class="add-task-btn">Add New Task</button>
-            <!-- <button id="inviter" class="inviter">Inviter</button> -->
+            <button id="inviter" class="inviter">Inviter</button>
         </div>
     </header>
 
@@ -319,10 +339,33 @@
             </form>
         </div>
     </div>
-    
 
-   
-    
+    <div class="overlay" id="overlay"></div>
+    <div class="form-container" id="form-container">
+        <h2 style="margin-bottom: 1.5rem; color: #333;">Invite Team Member</h2>
+        <form action="#" method="post">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                 <div id="email-plus">
+                <input type="email" id="email" name="email" placeholder="Enter team member's email" required>
+                <div id="plusicon"><b>+</b></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="role">Permissions</label>
+                <select id="role" name="role" required>
+                    <option value="">Select permission level</option>
+                    <option value="modify">Modify</option>
+                    <option value="read">Read Only</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="cancel" id="cancel">Cancel</button>
+                <button type="submit" class="add">Send Invite</button>
+            </div>
+        </form>
+    </div>
+
     <script src="assets/showtask.js" ></script>
 
    
