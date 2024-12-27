@@ -260,6 +260,21 @@
             gap: 2px;
             
         }
+                
+        #icon{
+            font-size: 20%;
+            width: 15px ;
+            height: 15px;
+            cursor:pointer  
+                
+        }
+
+        #header{
+            display: flex;
+            flex-direction: row;
+            gap: 60px;
+            
+        } 
        
 
     </style> 
@@ -366,7 +381,107 @@
         </form>
     </div>
 
+
+    <!-- *************************details ***************** -->
+    <div id="taskModal" class="modal fixed inset-0 z-50 hidden">
+        <div class="modal-backdrop absolute inset-0 flex items-center justify-center">
+            <div class="modal-content bg-white rounded-2xl shadow-xl max-w-lg w-full mx-4">
+                <!-- Header -->
+                <div class="p-6 border-b border-gray-100">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h2 class="text-2xl font-semibold text-gray-800">Implement new feature</h2>
+                            <p class="text-gray-500 mt-1">Add user authentication to the app</p>
+                        </div>
+                        <button 
+                            onclick="closeModal()"
+                            class="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                        >
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-4 mt-4">
+                        <span class="priority-high text-white text-sm px-3 py-1 rounded-full">high</span>
+                        <span class="text-gray-400 text-sm">Due: 2023-06-30</span>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="p-6 space-y-6">
+                    <!-- Assignment Section -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Assign to
+                        </label>
+                        <div class="relative">
+                            <input 
+                                type="email" 
+                                id="assignEmail"
+                                placeholder="Enter email address"
+                                class="custom-input w-full px-4 py-2 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none"
+                            >
+                            <button 
+                                onclick="assignTask()"
+                                class="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors duration-200"
+                            >
+                                Assign
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Details Section -->
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-700 mb-2">Description</h3>
+                            <p class="text-gray-600">
+                                Implement user authentication system including login, registration, and password recovery features. 
+                                Ensure secure password handling and JWT token implementation.
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-700 mb-2">Subtasks</h3>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-2 text-gray-600">
+                                    <input type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500">
+                                    Set up authentication routes
+                                </label>
+                                <label class="flex items-center gap-2 text-gray-600">
+                                    <input type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500">
+                                    Implement password hashing
+                                </label>
+                                <label class="flex items-center gap-2 text-gray-600">
+                                    <input type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500">
+                                    Create JWT middleware
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="p-6 border-t border-gray-100 flex justify-end gap-3">
+                    <button 
+                        onclick="closeModal()"
+                        class="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200"
+                    >
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <script src="assets/showtask.js" ></script>
+    <!-- <script src="../assets/details.js" ></script> -->
 
    
 </body>
