@@ -1,7 +1,6 @@
 <?php
 
 class Task {
-    // Default constants
     public const DEFAULT_PRIORITY = 1;
     public const DEFAULT_STATUS = 1;
     public const DEFAULT_TYPE = 1;
@@ -38,7 +37,6 @@ class Task {
         $this->createdBy = $createdBy ?? 0;
     }
 
-    // Getters
     public function getId(): ?int {
         return $this->id;
     }
@@ -75,7 +73,6 @@ class Task {
         return $this->createdBy;
     }
 
-    // Setters with validation
     public function setTitle(string $title): self {
         $this->validateTitle($title);
         $this->title = $title;
@@ -117,7 +114,6 @@ class Task {
         return $this;
     }
 
-    // Validation methods
     private function validateTitle(string $title): void {
         if (empty(trim($title)) || strlen($title) > 255) {
             throw new InvalidArgumentException("Title must be non-empty and less than 255 characters");
@@ -150,13 +146,11 @@ class Task {
     }
 
     private function validateAssignedTo(int $assignedTo): void {
-        // You might want to add a database check here to ensure the user exists
         if ($assignedTo < 0) {
             throw new InvalidArgumentException("Invalid user ID");
         }
     }
 
-    // Your existing create method (with minor improvements)
     public static function create(
         string $title, 
         string $description, 
@@ -171,7 +165,6 @@ class Task {
             $pdo = DatabaseConfig::getConnection();
             $dueDate = $dueDate ?? new DateTime('+7 days');
 
-            // Role and permission checks remain the same as in your original implementation
             $stmt = $pdo->prepare("SELECT role FROM Users WHERE id = ?");
             $stmt->execute([$createdBy]);
             $role = $stmt->fetchColumn();

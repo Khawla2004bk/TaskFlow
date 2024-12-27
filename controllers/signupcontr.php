@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         error_log("Résultat de connexion : " . ($loginResult ? 'Succès' : 'Échec'));
         
         if ($loginResult) {
-            $redirect = ($role == Role::USER) ? 'index.php?page=user' : 'index.php?page=login';
+            $redirect = ($role == Role::USER) ? 'index.php?page=showTask' : 'index.php?page=login';
             header("Location: $redirect");
             exit();
         } else {
