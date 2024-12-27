@@ -111,18 +111,7 @@ include('controllers/showUsers.php')
                 <button class="btn px-4 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600">Delete</button>
               </td>
             </tr>
-            <!-- <tr class="table-row">
-              <td class="px-6 py-4 text-sm font-medium text-gray-700">2</td>
-              <td class="px-6 py-4 text-sm text-gray-700">Jane Smith</td>
-              <td class="px-6 py-4 text-sm text-gray-700">jane.smith@example.com</td>
-              <td class="px-6 py-4 text-sm text-gray-700">********</td>
-              <td class="px-6 py-4 text-sm text-gray-700">2024-11-15</td>
-              <td class="px-6 py-4 text-sm text-gray-700">2024-12-20</td>
-              <td class="px-6 py-4 text-sm text-gray-700 flex space-x-4">
-                <button class="btn px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600">Edit</button>
-                <button class="btn px-4 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600">Delete</button>
-              </td>
-            </tr> -->
+           
             <?php } ?>
           </tbody>
         </table>

@@ -12,7 +12,7 @@ include_once __DIR__ . '/../config/helper.php';
     <title>TaskMaster Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/style.css">
-    <!-- <style>
+     <style>
         .form-container {
             display: none;
             position: fixed;
@@ -248,7 +248,7 @@ include_once __DIR__ . '/../config/helper.php';
         .task-due-date {
             color: #6c757d;
         }
-    </style> -->
+    </style> 
 </head>
     <header class="header">
         <div class="header-content">

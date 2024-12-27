@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header('Location: ../views/admin.php');
                 exit();
             } else {
-                header('Location: ../views/showTask.php');
+                header('Location: views/showTask.php');
                 exit();
             }
         } else {
