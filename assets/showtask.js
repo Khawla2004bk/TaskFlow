@@ -1,8 +1,8 @@
 // ********************* gestion des taches *****************
 
-const addTaskBtn = document.getElementById('addTaskBtn');
-const taskModal = document.getElementById('taskModal');
-const taskForm = document.getElementById('taskForm');
+// const addTaskBtn = document.getElementById('addTaskBtn');
+// const taskModal = document.getElementById('taskModal');
+// const taskForm = document.getElementById('taskForm');
 const cancelBtn = document.getElementById('cancelBtn');
 const columns = {
     todo: document.querySelector('#todo-column .tasks'),
@@ -12,14 +12,14 @@ const columns = {
 
 let tasks = [];
 
-function showModal() {
-    taskModal.classList.add('active');
-}
+// function showModal() {
+//     taskModal.classList.add('active');
+// }
 
-function hideModal() {
-    taskModal.classList.remove('active');
-    taskForm.reset();
-}
+// function hideModal() {
+//     taskModal.classList.remove('active');
+//     taskForm.reset();
+// }
 
 function createTaskElement(task) {
     const taskEl = document.createElement('div');
@@ -29,11 +29,13 @@ function createTaskElement(task) {
     
     taskEl.innerHTML = `
         <h3 class="task-title">${task.title}</h3>
+        <button><img></button>
         <p class="task-description">${task.description}</p>
         <div class="task-meta">
             <span class="priority priority-${task.priority}">${task.priority}</span>
             <span>${task.dueDate}</span>
         </div>
+        <i class="fas fa-info-circle details-icon" onclick="showTaskDetails(${task.id})"></i>
     `;
 
     return taskEl;
@@ -85,29 +87,43 @@ function getDragAfterElement(container, y) {
     }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
 
-addTaskBtn.addEventListener('click', showModal);
-cancelBtn.addEventListener('click', hideModal);
-taskModal.addEventListener('click', e => {
-    if (e.target === taskModal) hideModal();
-});
+function showTaskDetails(taskId) {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
 
-taskForm.addEventListener('submit', e => {
-    e.preventDefault();
-    
-    const task = {
-        id: Date.now(),
-        title: taskForm.title.value,
-        description: taskForm.description.value,
-        priority: taskForm.priority.value,
-        type: taskForm.type.value,
-        dueDate: taskForm.dueDate.value,
-    };
+    // You can customize this alert with a modal if you prefer
+    alert(`
+Task Details:
+Title: ${task.title}
+Description: ${task.description}
+Priority: ${task.priority}
+Due Date: ${task.dueDate}
+    `);
+}
 
-    addTask(task);
-    console.log(task);
+// addTaskBtn.addEventListener('click', showModal);
+// cancelBtn.addEventListener('click', hideModal);
+// taskModal.addEventListener('click', e => {
+//     if (e.target === taskModal) hideModal();
+// });
+
+// taskForm.addEventListener('submit', e => {
+//     e.preventDefault();
     
-    hideModal();
-});
+//     const task = {
+//         id: Date.now(),
+//         title: taskForm.title.value,
+//         description: taskForm.description.value,
+//         priority: taskForm.priority.value,
+//         type: taskForm.type.value,
+//         dueDate: taskForm.dueDate.value,
+//     };
+
+//     addTask(task);
+//     console.log(task);
+    
+//     hideModal();
+// });
 
 // Add some sample tasks
 [
@@ -141,7 +157,7 @@ taskForm.addEventListener('submit', e => {
 
 const formContainer = document.getElementById('form-container');
 const inviter = document.getElementById('inviter');
-
+//console.log(inviter)
 
 formContainer.style.display='none'
 inviter.addEventListener('click',function(){

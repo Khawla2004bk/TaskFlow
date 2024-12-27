@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaskMaster Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/style.css">
+    <link rel="stylesheet" href="assets/style.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- <style>
+  <style>
         .form-container {
             display: none;
             position: fixed;
@@ -262,12 +262,12 @@
         }
        
 
-    </style> -->
+    </style> 
 </head>
 <body>
     <header class="header">
         <div class="header-content">
-            <a href="#" class="logo">TaskMaster Pro</a>
+            <a href="#" class="logo">TaskFlow</a>
             <button id="addTaskBtn" class="add-task-btn">Add New Task</button>
             <button id="inviter" class="inviter">Inviter</button>
         </div>
