@@ -113,12 +113,7 @@ class User {
             error_log("Erreur PDO lors de l'enregistrement de l'utilisateur : " . $e->getMessage());
             error_log("Trace de l'erreur : " . $e->getTraceAsString());
             return false;
-        } catch (Exception $e) {
-            // Log des autres types d'erreurs
-            error_log("Erreur lors de l'enregistrement de l'utilisateur : " . $e->getMessage());
-            error_log("Trace de l'erreur : " . $e->getTraceAsString());
-            return false;
-        }
+        } 
     }
 
     public static function login(string $email, string $password): ?User {
