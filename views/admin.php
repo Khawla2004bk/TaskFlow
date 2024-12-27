@@ -262,6 +262,7 @@
         }
        
 
+
     </style> 
 </head>
 <body>
@@ -297,46 +298,44 @@
     <div id="taskModal" class="modal">
         <div class="modal-content">
             <h2 style="margin-bottom: 1.5rem; font-size: 1.5rem;">Add New Task</h2>
-            <form id="taskForm">
+            <form id="taskForm" action="index.php?action=create_task" method="POST">
                 <div class="form-group">
-                    <label class="form-label" for="title">Title</label>
-                    <input type="text" id="title" class="form-input" required>
+                    <label for="title" class="form-label">Titre</label>
+                    <input type="text" id="title" name="title" class="form-input" required>
                 </div>
-                
                 <div class="form-group">
-                    <label class="form-label" for="description">Description</label>
-                    <textarea id="description" class="form-textarea"></textarea>
+                    <label for="description" class="form-label">Description</label>
+                    <textarea id="description" name="description" class="form-textarea"></textarea>
                 </div>
-                
                 <div class="form-group">
-                    <label class="form-label" for="priority">Priority</label>
-                    <select id="priority" class="form-select">
-                        <option value="low">Low</option>
-                        <option value="medium">Medium</option>
-                        <option value="high">High</option>
+                    <label for="priority" class="form-label">Priority</label>
+                    <select id="priority" name="priority" class="form-select">
+                        <option value="1">Low</option>
+                        <option value="2" selected>Medium</option>
+                        <option value="3">High</option>
                     </select>
                 </div>
-                
                 <div class="form-group">
-                    <label class="form-label" for="type">Type</label>
-                    <select id="type" class="form-select">
-                        <option value="basic">Basic</option>
-                        <option value="bug">Bug</option>
-                        <option value="feature">Feature</option>
+                    <label for="taskStatus">Status</label>
+                    <select id="taskStatus" name="status">
+                        <option value="1">To do</option>
+                        <option value="2">In progress</option>
+                        <option value="3">Done</option>
                     </select>
                 </div>
-
-                
                 <div class="form-group">
-                    <label class="form-label" for="dueDate">Due Date</label>
-                    <input type="date" id="dueDate" class="form-input">
+                    <label for="type" class="form-label">Type</label>
+                    <select id="type" name="type" class="form-select">
+                        <option value="1">Basic</option>
+                        <option value="2">Bug</option>
+                        <option value="3">Feature</option>
+                    </select>
                 </div>
-                
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add Task</button>
+                    <button type="button" class="cancel btn btn-secondary" id="cancelBtn" onclick="closeTaskForm()">Cancel</button>
+                    <button type="submit" class="add btn btn-primary">Add Task</button>
                 </div>
-            </form>
+             </form>
         </div>
     </div>
 

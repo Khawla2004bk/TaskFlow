@@ -147,7 +147,7 @@ class Task {
 
     private function validateAssignedTo(int $assignedTo): void {
         if ($assignedTo < 0) {
-            throw new InvalidArgumentException("Invalid user ID");
+            throw new InvalidArgumentException("Invalid user");
         }
     }
 
@@ -225,6 +225,246 @@ class Task {
             }
             error_log("Erreur lors de la création de la tâche : " . $e->getMessage());
             return null;
+        }
+    }
+
+    public static function getById(int $taskId): ?Task {
+        try {
+            $pdo = DatabaseConfig::getConnection();
+            $stmt = $pdo->prepare("
+                SELECT t.*, 
+                       tt.name as type_name, 
+                       ts.name as status_name, 
+                       p.name as priority_name
+                FROM Tasks t
+                JOIN TaskTypes tt ON t.type = tt.id
+                JOIN TaskStatus ts ON t.status = ts.id
+                JOIN Priority p ON t.priority = p.id
+                WHERE t.id = ?
+            ");
+            $stmt->execute([$taskId]);
+            $taskData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$taskData) {
+                return null;
+            }
+
+            return new Task(
+                $taskData['title'],
+                $taskData['description'],
+                $taskData['priority'],
+                $taskData['status'],
+                $taskData['type'],
+                new DateTime($taskData['due_date']),
+                null,
+                null,
+                $taskData['id']
+            );
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération de la tâche : " . $e->getMessage());
+            return null;
+        }
+    }
+
+    public static function listTasks(array $filters = [], int $limit = 50, int $offset = 0): array {
+        try {
+            $pdo = DatabaseConfig::getConnection();
+            
+            $query = "SELECT t.* FROM Tasks t WHERE 1=1 ";
+            $params = [];
+
+            if (!empty($filters['status'])) {
+                $query .= " AND t.status = ? ";
+                $params[] = $filters['status'];
+            }
+
+            if (!empty($filters['type'])) {
+                $query .= " AND t.type = ? ";
+                $params[] = $filters['type'];
+            }
+
+            if (!empty($filters['priority'])) {
+                $query .= " AND t.priority = ? ";
+                $params[] = $filters['priority'];
+            }
+
+            $query .= " LIMIT ? OFFSET ? ";
+            $params[] = $limit;
+            $params[] = $offset;
+
+            $stmt = $pdo->prepare($query);
+            $stmt->execute($params);
+
+            $tasks = [];
+            while ($taskData = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $tasks[] = new Task(
+                    $taskData['title'],
+                    $taskData['description'],
+                    $taskData['priority'],
+                    $taskData['status'],
+                    $taskData['type'],
+                    new DateTime($taskData['due_date']),
+                    null,
+                    null,
+                    $taskData['id']
+                );
+            }
+
+            return $tasks;
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la liste des tâches : " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function updateStatus(int $newStatus): bool {
+        try {
+            $this->validateStatus($newStatus);
+            
+            $pdo = DatabaseConfig::getConnection();
+            $stmt = $pdo->prepare("UPDATE Tasks SET status = ? WHERE id = ?");
+            $result = $stmt->execute([$newStatus, $this->id]);
+
+            if ($result) {
+                $this->status = $newStatus;
+            }
+
+            return $result;
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la mise à jour du statut : " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function assignToUsers(array $userIds, int $assignedBy): bool {
+        if (!$this->id) {
+            error_log("Impossible d'assigner une tâche sans ID");
+            return false;
+        }
+
+        try {
+            $pdo = DatabaseConfig::getConnection();
+            $pdo->beginTransaction();
+
+            $stmt = $pdo->prepare("
+                INSERT INTO UsersTasks (task_id, user_id, assigned_by) 
+                VALUES (?, ?, ?)
+            ");
+
+            foreach ($userIds as $userId) {
+                // Vérifier que l'utilisateur existe
+                $checkUser = $pdo->prepare("SELECT COUNT(*) FROM Users WHERE id = ?");
+                $checkUser->execute([$userId]);
+                
+                if ($checkUser->fetchColumn() === 0) {
+                    $pdo->rollBack();
+                    error_log("Utilisateur $userId non trouvé");
+                    return false;
+                }
+
+                $stmt->execute([$this->id, $userId, $assignedBy]);
+            }
+
+            $pdo->commit();
+            return true;
+        } catch (PDOException $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            error_log("Erreur lors de l'assignation des tâches : " . $e->getMessage());
+            return false;
+        }
+    }
+
+
+    public function getAssignedUsers(): array {
+        if (!$this->id) {
+            return [];
+        }
+
+        try {
+            $pdo = DatabaseConfig::getConnection();
+            $stmt = $pdo->prepare("
+                SELECT u.id, u.name, u.email, ut.assigned_at, 
+                       assigner.name as assigned_by_name
+                FROM UsersTasks ut
+                JOIN Users u ON ut.user_id = u.id
+                JOIN Users assigner ON ut.assigned_by = assigner.id
+                WHERE ut.task_id = ?
+            ");
+            $stmt->execute([$this->id]);
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des utilisateurs assignés : " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function removeAllAssignations(): bool {
+        if (!$this->id) {
+            return false;
+        }
+
+        try {
+            $pdo = DatabaseConfig::getConnection();
+            $stmt = $pdo->prepare("DELETE FROM UsersTasks WHERE task_id = ?");
+            return $stmt->execute([$this->id]);
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la suppression des assignations : " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public static function getTasksForUser(int $userId, array $filters = []): array {
+        try {
+            $pdo = DatabaseConfig::getConnection();
+            
+            $query = "
+                SELECT t.* 
+                FROM Tasks t
+                JOIN UsersTasks ut ON t.id = ut.task_id
+                WHERE ut.user_id = ?
+            ";
+            $params = [$userId];
+
+            if (!empty($filters['status'])) {
+                $query .= " AND t.status = ? ";
+                $params[] = $filters['status'];
+            }
+
+            if (!empty($filters['type'])) {
+                $query .= " AND t.type = ? ";
+                $params[] = $filters['type'];
+            }
+
+            if (!empty($filters['priority'])) {
+                $query .= " AND t.priority = ? ";
+                $params[] = $filters['priority'];
+            }
+
+            $stmt = $pdo->prepare($query);
+            $stmt->execute($params);
+
+            $tasks = [];
+            while ($taskData = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $tasks[] = new Task(
+                    $taskData['title'],
+                    $taskData['description'],
+                    $taskData['priority'],
+                    $taskData['status'],
+                    $taskData['type'],
+                    new DateTime($taskData['due_date']),
+                    $userId,
+                    null,
+                    $taskData['id']
+                );
+            }
+
+            return $tasks;
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des tâches de l'utilisateur : " . $e->getMessage());
+            return [];
         }
     }
 }
