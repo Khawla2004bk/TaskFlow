@@ -5,9 +5,9 @@ const taskModal = document.getElementById('taskModal');
 const taskForm = document.getElementById('taskForm');
 const cancelBtn = document.getElementById('cancelBtn');
 const columns = {
-    todo: document.querySelector('#todo-column .tasks'),
-    inprogress: document.querySelector('#inprogress-column .tasks'),
-    done: document.querySelector('#done-column .tasks')
+    "to-do": document.querySelector('#todo-column .tasks'),
+    "in-progress": document.querySelector('#inprogress-column .tasks'),
+    "completed": document.querySelector('#done-column .tasks')
 };
 
 let tasks = [];
@@ -44,9 +44,14 @@ function createTaskElement(task) {
 }
 
 function addTask(task) {
+    console.log('Adding task:', task);
     tasks.push(task);
     const taskEl = createTaskElement(task);
-    columns.todo.appendChild(taskEl);
+    
+    const targetColumn = mapStatusToColumn(task.status);
+    console.log('Target column for task:', targetColumn);
+    targetColumn.appendChild(taskEl);
+    
     setupDragAndDrop(taskEl);
 }
 
@@ -61,17 +66,21 @@ function setupDragAndDrop(element) {
 }
 
 Object.values(columns).forEach(column => {
-    column.addEventListener('dragover', e => {
-        e.preventDefault();
-        const dragging = document.querySelector('.dragging');
-        const afterElement = getDragAfterElement(column, e.clientY);
-        
-        if (afterElement) {
-            column.insertBefore(dragging, afterElement);
-        } else {
-            column.appendChild(dragging);
-        }
-    });
+    if (column) {
+        column.addEventListener('dragover', e => {
+            e.preventDefault();
+            const dragging = document.querySelector('.dragging');
+            if (dragging) {
+                const afterElement = getDragAfterElement(column, e.clientY);
+                
+                if (afterElement) {
+                    column.insertBefore(dragging, afterElement);
+                } else {
+                    column.appendChild(dragging);
+                }
+            }
+        });
+    }
 });
 
 function getDragAfterElement(container, y) {
@@ -93,7 +102,6 @@ function showTaskDetails(taskId) {
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
 
-    // You can customize this alert with a modal if you prefer
     alert(`
 Task Details:
 Title: ${task.title}
@@ -101,6 +109,26 @@ Description: ${task.description}
 Priority: ${task.priority}
 Due Date: ${task.dueDate}
     `);
+}
+
+function mapStatusToText(statusValue) {
+    const statusMap = {
+        '1': 'to-do',
+        '2': 'in-progress',
+        '3': 'completed'
+    };
+    return statusMap[statusValue] || 'to-do';
+}
+
+function mapStatusToColumn(status) {
+    const columnMap = {
+        'to-do': document.querySelector('#todo-column .tasks'),
+        'in-progress': document.querySelector('#inprogress-column .tasks'),
+        'completed': document.querySelector('#done-column .tasks')
+    };
+    console.log('Mapping status:', status);
+    console.log('Target column:', columnMap[status]);
+    return columnMap[status] || columnMap['to-do'];
 }
 
 addTaskBtn.addEventListener('click', showModal);
@@ -115,16 +143,46 @@ taskForm.addEventListener('submit', e => {
     const task = {
         id: Date.now(),
         title: taskForm.title.value,
-        description: taskForm.description.value,
+        description: taskForm.description.value || '',
         priority: taskForm.priority.value,
         type: taskForm.type.value,
-        dueDate: taskForm.dueDate.value,
+        dueDate: taskForm.dueDate.value || null,
+        status: mapStatusToText(taskForm.status.value)
     };
 
-    addTask(task);
-    console.log(task);
-    
-    hideModal();
+    fetch('../api/add_task.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(task)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            task.id = data.taskId;
+            addTask(task);
+            hideModal();
+        } else {
+            console.error('Server error:', data.error);
+            alert(`Erreur lors de l'ajout de la tâche : 
+                Détails de l'erreur : ${data.error}
+                Données envoyées : 
+                - Titre : ${task.title}
+                - Type : ${task.type}
+                - Statut : ${task.status}
+                - Priorité : ${task.priority}`);
+        }
+    })
+    .catch(error => {
+        console.error('Fetch Error:', error);
+        alert('Une erreur est survenue lors de l\'ajout de la tâche. Veuillez vérifier la console pour plus de détails.');
+    });
 });
 
 // Add some sample tasks
@@ -135,7 +193,7 @@ taskForm.addEventListener('submit', e => {
         description: 'Add user authentication to the app',
         priority: 'high',
         dueDate: '2023-06-30',
-        status: 'todo'
+        status: "to-do"
     },
     {
         id: 2,
@@ -143,7 +201,7 @@ taskForm.addEventListener('submit', e => {
         description: 'Address performance issue in production',
         priority: 'high',
         dueDate: '2023-06-25',
-        status: 'inprogress'
+        status: "in-progress"
     },
     {
         id: 3,
@@ -151,7 +209,7 @@ taskForm.addEventListener('submit', e => {
         description: 'Complete UI/UX review for new features',
         priority: 'low',
         dueDate: '2023-06-20',
-        status: 'done'
+        status: "completed"
     }
 ].forEach(task => addTask(task));
 
@@ -165,11 +223,9 @@ formContainer.style.display='none'
 inviter.addEventListener('click',function(){
    
     formContainer.style.display='block' 
-    console.log('okkkk')
 });
 
 document.getElementById('cancel').addEventListener('click',function(){
    formContainer.style.display='none'
 
 });
-
