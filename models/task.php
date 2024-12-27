@@ -204,6 +204,7 @@ class Task {
 
                 $assignStmt->execute([$taskId, $userId, $createdBy]);
             }
+
             $pdo->commit();
 
             return new Task(
@@ -217,9 +218,9 @@ class Task {
                 $createdBy, 
                 $taskId
             );
-        }
-        catch (PDOException $e) {
-            if ($pdo->inTransaction()) {
+
+        } catch (PDOException $e) {
+            if (isset($pdo) && $pdo->inTransaction()) {
                 $pdo->rollBack();
             }
             error_log("Erreur lors de la création de la tâche : " . $e->getMessage());
@@ -227,125 +228,3 @@ class Task {
         }
     }
 }
-
-
-// class Task {
-//     private $id;
-//     private $title;
-//     private $description;
-//     private $priority;
-//     private $status;
-//     private $type;
-//     private $dueDate;
-
-//     private $assignedTo;
-
-//     private $createdBy;
-
-//     public function __construct(?int $id = null, string $title, string $description, int $priority, int $status, int $type, DateTime $dueDate, int $assignedTo, int $createdBy) {
-//         $this->id = $id ?? 0;
-//         $this->title = $title;
-//         $this->description = $description;
-//         $this->priority = $priority;
-//         $this->status = $status;
-//         $this->type = $type;
-//         $this->dueDate = $dueDate;
-//         $this->assignedTo = $assignedTo;
-//         $this->createdBy = $createdBy;
-//     }
-
-//     public function getId(): int {
-//         return $this->id;
-//     }
-
-//     public function getTitle(): string {
-//         return $this->title;
-//     }
-
-//     public function getDescription(): string {
-//         return $this->description;
-//     }
-
-//     public function getPriority(): int {
-//         return $this->priority;
-//     }
-
-//     public function getStatus(): int {
-//         return $this->status;
-//     }
-
-//     public function getType(): int {
-//         return $this->type;
-//     }
-
-//     public function getDueDate(): DateTime {
-//         return $this->dueDate;
-//     }
-
-//     public function getAssignedTo(): int {
-//         return $this->assignedTo;
-//     }
-
-//     public function getCreatedBy(): int {
-//         return $this->createdBy;
-//     }
-
-//     public static function create(string $title, string $description, int $priority = 1, int $status = 1, int $type = 1, DateTime $dueDate, array $assignedTo, int $createdBy): ?Task {
-//         try {
-//             $pdo = DatabaseConfig::getConnection();
-
-//             $stmt = $pdo->prepare("SELECT role FROM USers WHERE id = ?");
-//             $stmt->execute([$createdBy]);
-//             $role = $stmt->fetchColumn();
-
-//             if ($role !== 1) {
-//                 error_log("Tentative de création de tâche par un utilisateur non-administrateur");
-//                 return null;
-//             }
-
-//             // if ($assignedTo) {
-//             //     $stmt = $pdo->prepare("SELECT COUNT(*) FROM Users WHERE id = ?");
-//             //     $stmt->execute([$assignedTo]);
-
-//             //     if ($stmt->fetchColumn() === 0) {
-//             //         error_log("Utilisateur assigné non trouvé");
-//             //         return null;
-//             //     }
-//             // }
-
-//             $pdo->beginTransaction();
-
-//             $stmt = $pdo->prepare("INSERT INTO Tasks (title, description, priority, status, type, due_date, created_by) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            
-//             $stmt->execute([$title, $description, $priority, $status, $type, $dueDate->format("Y-m-d H:i:s"), $createdBy]);
-
-//             $taskId = $pdo->lastInsertId();
-
-//             $assignStmt = $pdo->prepare("INSERT INTO UsersTasks (task_id, user_id, assigned_by) VALUES (?, ?, ?)");
-
-//             foreach ($assignedTo as $userId) {
-//                 $checkUser = $pdo->prepare("SELECT COUNT(*) FROM Users WHERE id = ?");
-//                 $checkUser->execute([$userId]);
-
-//                 if ($checkUser->fetchColumn() === 0) {
-//                     $pdo->rollBack();
-//                     error_log("Utilisateur assigné non trouvé: $userId");
-//                     return null;
-//                 }
-
-//                 $assignStmt->execute([$userId, $taskId, $createdBy]);
-//             }
-//             $pdo->commit();
-
-//             return new Task($taskId, $title, $description, $priority, $status, $type, $dueDate, array_key_first($assignedTo), $createdBy);
-//         }
-//         catch (PDOException $e) {
-//             if ($pdo->inTransaction()) {
-//                 $pdo->rollBack();
-//             }
-//             error_log("Erreur lors de la création de la tâche : " . $e->getMessage());
-//             return null;
-//         }
-//     }
-
-// }
