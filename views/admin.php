@@ -325,9 +325,9 @@
                 <div class="form-group">
                     <label for="priority" class="form-label">Priority</label>
                     <select id="priority" name="priority" class="form-select">
-                        <option value="1">Low</option>
-                        <option value="2" selected>Medium</option>
-                        <option value="3">High</option>
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -345,6 +345,10 @@
                         <option value="2">Bug</option>
                         <option value="3">Feature</option>
                     </select>
+                </div>
+                <div class="form-group">
+                    <label for="dueDate" class="form-label">Due Date</label>
+                    <input type="date" id="dueDate" name="dueDate" class="form-input">
                 </div>
                 <div class="form-actions">
                     <button type="button" class="cancel btn btn-secondary" id="cancelBtn" onclick="closeTaskForm()">Cancel</button>
@@ -480,7 +484,7 @@
 
 
     <script src="assets/showtask.js" ></script>
-    <!-- <script src="../assets/details.js" ></script> -->
+    <script src="assets/details.js" ></script>
 
    
 </body>
