@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,19 +15,41 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @keyframes slideIn {
-            from { transform: translateX(-100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
         body {
@@ -48,7 +71,7 @@
             background: white;
             border-radius: 10px;
             padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
         }
 
@@ -64,7 +87,7 @@
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
             position: relative;
             border-left: 6px solid transparent;
@@ -74,7 +97,7 @@
 
         .task-item:hover {
             transform: scale(1.02);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
         }
 
         .task-item:hover h3 {
@@ -94,7 +117,7 @@
             align-items: center;
             justify-content: center;
             font-size: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
             cursor: pointer;
             transition: all 0.3s ease;
             animation: pulse 2s infinite;
@@ -114,7 +137,7 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.4);
+            background-color: rgba(0, 0, 0, 0.4);
             animation: fadeIn 0.3s ease-out;
         }
 
@@ -132,17 +155,20 @@
         }
 
         .task-priority-low {
-            border-left-color: #4CAF50; /* Vert */
+            border-left-color: #4CAF50;
+            /* Vert */
             animation: slideIn 0.3s ease-out;
         }
 
         .task-priority-medium {
-            border-left-color: #FFC107; /* Jaune */
+            border-left-color: #FFC107;
+            /* Jaune */
             animation: slideIn 0.3s ease-out;
         }
 
         .task-priority-high {
-            border-left-color: #F44336; /* Rouge */
+            border-left-color: #F44336;
+            /* Rouge */
             animation: slideIn 0.3s ease-out;
         }
 
@@ -155,17 +181,17 @@
             cursor: pointer;
         }
 
-        .modal-content input, 
-        .modal-content select, 
+        .modal-content input,
+        .modal-content select,
         .modal-content textarea {
-            background: rgba(255,255,255,0.2) !important;
-            border: 1px solid rgba(255,255,255,0.3) !important;
+            background: rgba(255, 255, 255, 0.2) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
             color: white !important;
         }
 
-        .modal-content input::placeholder, 
+        .modal-content input::placeholder,
         .modal-content textarea::placeholder {
-            color: rgba(255,255,255,0.7) !important;
+            color: rgba(255, 255, 255, 0.7) !important;
         }
 
         .search-container {
@@ -204,6 +230,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="search-container">
         <input type="text" id="searchInput" placeholder="Rechercher des tâches..." class="search-input">
@@ -234,7 +261,8 @@
             <form id="taskForm" class="space-y-4">
                 <div>
                     <label class="block mb-2">Titre de la Tâche</label>
-                    <input type="text" id="taskTitle" placeholder="Entrez le titre" class="w-full p-3 rounded-lg" required>
+                    <input type="text" id="taskTitle" placeholder="Entrez le titre" class="w-full p-3 rounded-lg"
+                        required>
                 </div>
                 <div>
                     <label class="block mb-2">Type de Tâche</label>
@@ -255,7 +283,8 @@
                 </div>
                 <div>
                     <label class="block mb-2">Description</label>
-                    <textarea id="taskDescription" placeholder="Décrivez votre tâche" rows="4" class="w-full p-3 rounded-lg" required></textarea>
+                    <textarea id="taskDescription" placeholder="Décrivez votre tâche" rows="4"
+                        class="w-full p-3 rounded-lg" required></textarea>
                 </div>
                 <div>
                     <label class="block mb-2">Statut Initial</label>
@@ -265,9 +294,11 @@
                         <option value="done">Done</option>
                     </select>
                 </div>
-                <button type="submit" class="w-full p-3 rounded-lg font-bold mt-4" style="background: white; color: #667eea;">
+                <button type="submit" class="w-full p-3 rounded-lg font-bold mt-4"
+                    style="background: white; color: #667eea;">
                     Ajouter Tâche
                 </button>
+                
             </form>
         </div>
     </div>
@@ -315,9 +346,9 @@
                         <p class="text-sm text-gray-500 mt-2">${description}</p>
                     </div>
                     <span class="text-2xl ${getTaskStatusColor(type)}">
-                        ${type === 'basique' ? '✓' : 
-                           type === 'bug' ? '!' : 
-                           '*'}
+                        ${type === 'basique' ? '✓' :
+                    type === 'bug' ? '!' :
+                        '*'}
                     </span>
                 </div>
             `;
@@ -337,7 +368,7 @@
 
         // Fonction pour obtenir la couleur en fonction du type de tâche
         function getTaskTypeColor(type) {
-            switch(type) {
+            switch (type) {
                 case 'bug': return 'text-red-700';
                 case 'fonctionnalite': return 'text-yellow-700';
                 default: return 'text-purple-700';
@@ -346,7 +377,7 @@
 
         // Fonction pour obtenir la couleur du statut
         function getTaskStatusColor(type) {
-            switch(type) {
+            switch (type) {
                 case 'bug': return 'text-red-500';
                 case 'fonctionnalite': return 'text-yellow-500';
                 default: return 'text-green-500';
@@ -361,7 +392,7 @@
 
             function performSearch() {
                 const query = searchInput.value.trim();
-                
+
                 if (query.length > 0) {
                     fetch(`search.php?query=${encodeURIComponent(query)}`)
                         .then(response => response.json())
@@ -393,9 +424,9 @@
                                             <p class="text-sm text-gray-500 mt-2">${task.description}</p>
                                         </div>
                                         <span class="text-2xl ${getTaskStatusColor(task.type)}">
-                                            ${task.type === 'basique' ? '✓' : 
-                                               task.type === 'bug' ? '!' : 
-                                               '*'}
+                                            ${task.type === 'basique' ? '✓' :
+                                        task.type === 'bug' ? '!' :
+                                            '*'}
                                         </span>
                                     </div>
                                 `;
@@ -420,4 +451,5 @@
         });
     </script>
 </body>
+
 </html>

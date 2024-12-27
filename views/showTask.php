@@ -11,10 +11,10 @@ include_once __DIR__ . '/../config/helper.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaskMaster Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/style.css">
-    <link rel="stylesheet" href="../assets/showtask.css">
+    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="assets/showtask.css">
 
-   
+  
 </head>
     <header class="header">
         <div class="header-content">
@@ -30,7 +30,9 @@ include_once __DIR__ . '/../config/helper.php';
         <div class="board">
             <div class="column" id="todo-column">
                 <h2 class="column-header">To Do</h2>
-                <div class="tasks"></div>
+                <div class="tasks">
+                
+                </div>
             </div>
             
             <div class="column" id="inprogress-column">
@@ -103,7 +105,7 @@ include_once __DIR__ . '/../config/helper.php';
 
    
     
-    <script src="../assets/showtask.js" ></script>
+    <script src="assets/showtask.js" ></script>
 
    
 </body>
