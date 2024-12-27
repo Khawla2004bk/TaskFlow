@@ -51,37 +51,6 @@ include_once __DIR__ . "/../controllers/signupcontr.php";
 </head>
 
 <body class="min-h-screen flex items-center justify-center p-4">
-    <?php
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    session_start(); // Ensure session is started
-
-    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        $_SESSION['error'] = 'Requête invalide.';
-        header('Location: index.php?page=login_signup');
-        exit();
-    }
-
-    require_once __DIR__ . '/../config/connexion.php';
-    $connexion = new Connexion();
-    $registerController = new RegisterController($connexion);
-
-    $response = $registerController->signup(
-        $_POST['name'], 
-        $_POST['email'], 
-        $_POST['password'],
-        isset($_POST['role']) ? $_POST['role'] : 2
-    );
-
-    if ($response['success']) {
-        $_SESSION['success'] = $response['message'];
-        header('Location: index.php?page=signup');
-    } else {
-        $_SESSION['error'] = $response['message'];
-        header('Location: index.php?page=signup');
-    }
-    exit();
-}
-?>
     <div id="particles-js" class="absolute inset-0"></div>
     <div class="glass w-full max-w-4xl flex rounded-xl overflow-hidden">
         <div class="w-1/2 bg-white p-12 flex flex-col justify-center">
