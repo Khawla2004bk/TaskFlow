@@ -143,19 +143,15 @@ function showTaskDetails(taskId) {
     detailsModal.classList.add('active');
     
     const task = tasks.find(t => t.id === taskId);
-    if (!task) return;
+    if (!task) {
+        console.error('Tâche non trouvée pour l\'ID:', taskId);
+        return;
+    }
 
-//     alert(`
-// Task Details:
-// Title: ${task.title}
-// Description: ${task.description}
-// Priority: ${task.priority}
-// Due Date: ${task.dueDate}
-//     `);
-
+    // Créer un conteneur modal avec l'ID de la tâche
     detailsModal.innerHTML = `
         <div class="modal-backdrop absolute inset-0 flex items-center justify-center">
-            <div class="modal-content bg-white rounded-2xl shadow-xl max-w-lg w-full mx-4">
+            <div class="modal-content bg-white rounded-2xl shadow-xl max-w-lg w-full mx-4" data-task-id="${taskId}">
                 <div class="p-6 border-b border-gray-100">
                     <div class="flex justify-between items-start">
                         <div>
@@ -198,34 +194,15 @@ function showTaskDetails(taskId) {
                             </button>
                         </div>
                     </div>
-
-                    <!-- Details Section -->
-                    <div class="space-y-4">
-                        <div>
-                            <h3 class="text-sm font-medium text-gray-700 mb-2">Description</h3>
-                            <p class="text-gray-600">${task.description}</p>
-                        </div>
-                        
-                    </div>
-                </div>
-
-                <!-- Footer -->
-                <div class="p-6 border-t border-gray-100 flex justify-end gap-3">
-                    <button 
-                        onclick="hideModal(detailsModal)"
-                        class="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-                    >
-                        Cancel
-                    </button>
-                    <button 
-                        class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200"
-                    >
-                        Save Changes
-                    </button>
                 </div>
             </div>
         </div>
     `;
+
+    console.log('showTaskDetails - Task Details:', {
+        taskId: taskId,
+        task: task
+    });
 }
 
 function mapStatusToText(statusValue) {
@@ -287,11 +264,14 @@ function loadTasks() {
                 });
             });
         } else {
-            // Optionnel : Gérer l'erreur
+            console.error('Erreur lors du chargement des tâches:', data.message);
+            alert('Impossible de charger les tâches : ' + data.message);
         }
     })
-    .catch(error => {});
-
+    .catch(error => {
+        console.error('Erreur de chargement des tâches:', error);
+        alert('Erreur de chargement des tâches');
+    });
 }
 
 // Charger les tâches au chargement de la page
@@ -335,11 +315,14 @@ taskForm.addEventListener('submit', e => {
             addTask(task);
             hideModal(taskModal);
         } else {
-            // Optionnel : Gérer l'erreur
+            console.error('Erreur lors de l\'ajout de la tâche:', data.message);
+            alert('Impossible d\'ajouter la tâche : ' + data.message);
         }
     })
-    .catch(error => {});
-
+    .catch(error => {
+        console.error('Erreur d\'ajout de la tâche:', error);
+        alert('Erreur d\'ajout de la tâche');
+    });
 });
 
 // ******************* form invite *******************
@@ -358,3 +341,72 @@ document.getElementById('cancel').addEventListener('click',function(){
 
 });
 
+function assignTask() {
+    const assignEmailInput = document.getElementById('assignEmail');
+    const email = assignEmailInput.value.trim();
+    const detailsModal = document.getElementById('detailsModal');
+    const modalContent = detailsModal.querySelector('.modal-content');
+    const taskId = modalContent ? parseInt(modalContent.dataset.taskId, 10) : null;
+
+    console.log('Debug assignTask:', {
+        email: email,
+        taskId: taskId,
+        modalContent: modalContent,
+        detailsModal: detailsModal
+    });
+
+    if (!email || !taskId) {
+        console.error('Email ou taskId invalide:', {
+            email: email,
+            taskId: taskId
+        });
+        alert('Veuillez saisir une adresse email valide et sélectionner une tâche');
+        return;
+    }
+
+    fetch('api/debug_assign_task.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `email=${encodeURIComponent(email)}&task_id=${taskId}`
+    })
+    .then(response => {
+        // Vérifier le statut de la réponse
+        if (!response.ok) {
+            // Tenter de lire le contenu de la réponse pour plus de détails
+            return response.text().then(text => {
+                console.error('Réponse d\'erreur:', text);
+                throw new Error(`Erreur HTTP: ${response.status} - ${text}`);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Réponse du serveur:', data);
+        
+        // Vérifier explicitement la propriété success
+        if (data.success === true) {
+            alert('Tâche assignée avec succès');
+            assignEmailInput.value = '';
+        } else {
+            // Afficher un message d'erreur détaillé
+            const errorMessage = data.message || 'Erreur lors de l\'assignation de la tâche';
+            console.error('Erreur d\'assignation:', errorMessage);
+            alert(errorMessage);
+        }
+    })
+    .catch(error => {
+        console.error('Erreur de requête:', error);
+        
+        // Message d'erreur plus informatif
+        let errorMessage = 'Une erreur est survenue lors de l\'assignation';
+        if (error instanceof TypeError) {
+            errorMessage += ' (problème de réseau ou de connexion)';
+        } else if (error.message) {
+            errorMessage += `: ${error.message}`;
+        }
+        
+        alert(errorMessage);
+    });
+}

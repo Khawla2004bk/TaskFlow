@@ -147,5 +147,28 @@ class User {
             return null;
         }
     }
+
+    public static function getUserByEmail(string $email): ?User {
+        try {
+            $pdo = DatabaseConfig::getConnection();
+            $stmt = $pdo->prepare("SELECT * FROM Users WHERE email = ?");
+            $stmt->execute([$email]);
+            $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($userData) {
+                return new User(
+                    $userData['name'], 
+                    $userData['email'], 
+                    $userData['password'], 
+                    $userData['role'], 
+                    $userData['id']
+                );
+            }
+            return null;
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la recherche de l'utilisateur par email : " . $e->getMessage());
+            return null;
+        }
+    }
     
 }

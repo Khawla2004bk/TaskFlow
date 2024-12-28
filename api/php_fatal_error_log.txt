@@ -1,0 +1,8 @@
+[2024-12-28 21:02:20] Fatal Error: Uncaught Error: Call to undefined method User::getUserByEmail() in C:\xampp\htdocs\TaskFlow\api\debug_assign_task.php:111
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\TaskFlow\api\debug_assign_task.php on line 111
+[2024-12-28 21:04:09] Fatal Error: Uncaught Error: Non-static method Task::assignToUsers() cannot be called statically in C:\xampp\htdocs\TaskFlow\api\debug_assign_task.php:136
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\TaskFlow\api\debug_assign_task.php on line 136

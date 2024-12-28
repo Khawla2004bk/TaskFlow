@@ -48,11 +48,10 @@ CREATE TABLE Tasks (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     due_date DATE,
-    created_by INT(11);
+    created_by INT(11),
     FOREIGN KEY (type) REFERENCES TaskTypes(id),
     FOREIGN KEY (status) REFERENCES TaskStatus(id),
     FOREIGN KEY (priority) REFERENCES Priority(id),
-    FOREIGN KEY (assigned_user_id) REFERENCES Users(id),
     FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
@@ -91,12 +90,12 @@ INSERT INTO Users (name, email, password, role) VALUES
 ('John Doe', 'john@example.com', 'user1', 2),
 ('Jane Smith', 'jane@example.com', 'user2', 2);
 
-INSERT INTO Tasks (title, description, type, status, assigned_user_id, due_date) VALUES
-('Corriger le bug de connexion', 'Les utilisateurs ne peuvent pas se connecter sur Firefox', 1, 1, 2, '2024-02-01'),
-('Ajouter la fonction de recherche', 'Implémenter une barre de recherche dans le header', 2, 2, 3, '2024-02-15'),
-('Mettre à jour la documentation', 'Mettre à jour la documentation utilisateur', 3, 3, 2, '2024-01-30'),
-('Optimiser les performances', 'Améliorer le temps de chargement de la page d''accueil', 2, 1, 3, '2024-02-20'),
-('Corriger le responsive design', 'Le site ne s''affiche pas correctement sur mobile', 1, 2, 2, '2024-02-10');
+INSERT INTO Tasks (title, description, type, status, priority, due_date, created_by) VALUES
+('Corriger le bug de connexion', 'Les utilisateurs ne peuvent pas se connecter sur Firefox', 1, 1, 1, '2024-02-01', 1),
+('Ajouter la fonction de recherche', 'Implémenter une barre de recherche dans le header', 2, 2, 2, '2024-02-15', 1),
+('Mettre à jour la documentation', 'Mettre à jour la documentation utilisateur', 3, 3, 3, '2024-01-30', 1),
+('Optimiser les performances', 'Améliorer le temps de chargement de la page d''accueil', 2, 1, 1, '2024-02-20', 1),
+('Corriger le responsive design', 'Le site ne s''affiche pas correctement sur mobile', 1, 2, 2, '2024-02-10', 1);
 
 INSERT INTO UsersTasks (task_id, user_id, assigned_by) VALUES
 (1, 2, 1),

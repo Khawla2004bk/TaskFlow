@@ -260,7 +260,7 @@ class Task {
             
             // Assignation des utilisateurs
             if (!empty($assignedTo)) {
-                $assignStmt = $pdo->prepare("INSERT INTO TaskAssignments (task_id, user_id) VALUES (?, ?)");
+                $assignStmt = $pdo->prepare("INSERT INTO UsersTasks (task_id, user_id) VALUES (?, ?)");
                 foreach ($assignedTo as $userId) {
                     $assignStmt->execute([$taskId, $userId]);
                 }
@@ -391,41 +391,95 @@ class Task {
     }
 
     public function assignToUsers(array $userIds, int $assignedBy): bool {
+        // Vérifier si la tâche a un ID (doit être sauvegardée en base)
         if (!$this->id) {
             error_log("Impossible d'assigner une tâche sans ID");
             return false;
         }
 
+        $pdo = DatabaseConfig::getConnection();
+
         try {
-            $pdo = DatabaseConfig::getConnection();
+            // Vérifier que la tâche existe
+            $checkTaskQuery = "SELECT * FROM Tasks WHERE id = :task_id";
+            $checkStmt = $pdo->prepare($checkTaskQuery);
+            $checkStmt->bindParam(':task_id', $this->id, PDO::PARAM_INT);
+            $checkStmt->execute();
+            $task = $checkStmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$task) {
+                error_log("Erreur : Tâche non trouvée - TaskId: " . $this->id);
+                return false;
+            }
+
+            // Début de la transaction
             $pdo->beginTransaction();
 
-            $stmt = $pdo->prepare("
-                INSERT INTO TaskAssignments (task_id, user_id, assigned_by) 
-                VALUES (?, ?, ?)
-            ");
+            // Requête pour vérifier les assignations existantes
+            $checkAssignQuery = "SELECT * FROM UsersTasks WHERE task_id = :task_id AND user_id = :user_id";
+            $checkAssignStmt = $pdo->prepare($checkAssignQuery);
 
+            // Requête pour insérer une nouvelle assignation
+            $insertQuery = "INSERT INTO UsersTasks (task_id, user_id, assigned_by, assigned_at) 
+                            VALUES (:task_id, :user_id, :assigned_by, NOW())";
+            $insertStmt = $pdo->prepare($insertQuery);
+
+            // Assignation pour chaque utilisateur
             foreach ($userIds as $userId) {
                 // Vérifier que l'utilisateur existe
-                $checkUser = $pdo->prepare("SELECT COUNT(*) FROM Users WHERE id = ?");
-                $checkUser->execute([$userId]);
-                
-                if ($checkUser->fetchColumn() === 0) {
+                $userCheckQuery = "SELECT * FROM Users WHERE id = :user_id";
+                $userCheckStmt = $pdo->prepare($userCheckQuery);
+                $userCheckStmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+                $userCheckStmt->execute();
+                $user = $userCheckStmt->fetch(PDO::FETCH_ASSOC);
+
+                if (!$user) {
+                    error_log("Erreur : Utilisateur non trouvé - UserId: $userId");
                     $pdo->rollBack();
-                    error_log("Utilisateur $userId non trouvé");
                     return false;
                 }
 
-                $stmt->execute([$this->id, $userId, $assignedBy]);
+                // Vérifier si l'assignation existe déjà
+                $checkAssignStmt->bindParam(':task_id', $this->id, PDO::PARAM_INT);
+                $checkAssignStmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+                $checkAssignStmt->execute();
+                $existingAssign = $checkAssignStmt->fetch(PDO::FETCH_ASSOC);
+
+                if ($existingAssign) {
+                    error_log("Assignation déjà existante - TaskId: " . $this->id . ", UserId: $userId");
+                    continue; // Passer à l'utilisateur suivant
+                }
+
+                // Insérer la nouvelle assignation
+                $insertStmt->bindParam(':task_id', $this->id, PDO::PARAM_INT);
+                $insertStmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+                $insertStmt->bindParam(':assigned_by', $assignedBy, PDO::PARAM_INT);
+
+                if (!$insertStmt->execute()) {
+                    error_log("Erreur lors de l'insertion de l'assignation - TaskId: " . $this->id . ", UserId: $userId");
+                    $pdo->rollBack();
+                    return false;
+                }
             }
 
+            // Valider la transaction
             $pdo->commit();
+            error_log("Assignation réussie - TaskId: " . $this->id . ", Utilisateurs: " . implode(',', $userIds));
             return true;
+
         } catch (PDOException $e) {
+            // En cas d'erreur, annuler la transaction
             if ($pdo->inTransaction()) {
                 $pdo->rollBack();
             }
-            error_log("Erreur lors de l'assignation des tâches : " . $e->getMessage());
+            error_log("Erreur PDO lors de l'assignation de tâche : " . $e->getMessage());
+            return false;
+        } catch (Exception $e) {
+            // Gérer les autres types d'erreurs
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            error_log("Erreur lors de l'assignation de tâche : " . $e->getMessage());
             return false;
         }
     }
@@ -438,12 +492,12 @@ class Task {
         try {
             $pdo = DatabaseConfig::getConnection();
             $stmt = $pdo->prepare("
-                SELECT u.id, u.name, u.email, ta.assigned_at, 
+                SELECT u.id, u.name, u.email, ut.assigned_at, 
                        assigner.name as assigned_by_name
-                FROM TaskAssignments ta
-                JOIN Users u ON ta.user_id = u.id
-                JOIN Users assigner ON ta.assigned_by = assigner.id
-                WHERE ta.task_id = ?
+                FROM UsersTasks ut
+                JOIN Users u ON ut.user_id = u.id
+                JOIN Users assigner ON ut.assigned_by = assigner.id
+                WHERE ut.task_id = ?
             ");
             $stmt->execute([$this->id]);
             
@@ -461,7 +515,7 @@ class Task {
 
         try {
             $pdo = DatabaseConfig::getConnection();
-            $stmt = $pdo->prepare("DELETE FROM TaskAssignments WHERE task_id = ?");
+            $stmt = $pdo->prepare("DELETE FROM UsersTasks WHERE task_id = ?");
             return $stmt->execute([$this->id]);
         } catch (PDOException $e) {
             error_log("Erreur lors de la suppression des assignations : " . $e->getMessage());
@@ -472,41 +526,81 @@ class Task {
     public static function getTasksForUser(int $userId, array $filters = []): array {
         $pdo = DatabaseConfig::getConnection();
         
-        $query = "SELECT * FROM Tasks WHERE created_by = :userId";
+        // Requête pour récupérer les tâches créées par l'utilisateur
+        $createdTasksQuery = "SELECT * FROM Tasks WHERE created_by = :userId";
+        
+        // Requête pour récupérer les tâches assignées à l'utilisateur
+        $assignedTasksQuery = "
+            SELECT t.* 
+            FROM Tasks t
+            JOIN UsersTasks ut ON t.id = ut.task_id
+            WHERE ut.user_id = :userId
+        ";
         
         // Ajouter des filtres supplémentaires si nécessaire
         if (!empty($filters)) {
             foreach ($filters as $key => $value) {
-                $query .= " AND $key = :$key";
+                $createdTasksQuery .= " AND $key = :$key";
+                $assignedTasksQuery .= " AND t.$key = :$key";
             }
         }
 
-        $stmt = $pdo->prepare($query);
-        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        try {
+            // Préparer et exécuter la requête pour les tâches créées
+            $createdStmt = $pdo->prepare($createdTasksQuery);
+            $createdStmt->bindParam(':userId', $userId, PDO::PARAM_INT);
 
-        // Lier les autres filtres
-        foreach ($filters as $key => $value) {
-            $stmt->bindValue(":$key", $value);
+            // Préparer et exécuter la requête pour les tâches assignées
+            $assignedStmt = $pdo->prepare($assignedTasksQuery);
+            $assignedStmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+
+            // Lier les filtres supplémentaires
+            foreach ($filters as $key => $value) {
+                $createdStmt->bindValue(":$key", $value);
+                $assignedStmt->bindValue(":$key", $value);
+            }
+
+            $createdStmt->execute();
+            $assignedStmt->execute();
+
+            $createdTasks = $createdStmt->fetchAll(PDO::FETCH_ASSOC);
+            $assignedTasks = $assignedStmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Fusionner et dédupliquer les tâches
+            $allTasks = array_merge($createdTasks, $assignedTasks);
+            $uniqueTasks = array_map('unserialize', array_unique(array_map('serialize', $allTasks)));
+
+            // Débogage détaillé
+            error_log("=== DÉBOGAGE RÉCUPÉRATION DES TÂCHES ===");
+            error_log("ID Utilisateur : $userId");
+            error_log("Tâches créées : " . count($createdTasks));
+            error_log("Tâches assignées : " . count($assignedTasks));
+            error_log("Tâches uniques : " . count($uniqueTasks));
+
+            // Convertir en objets Task
+            $tasks = [];
+            foreach ($uniqueTasks as $taskData) {
+                try {
+                    $tasks[] = new Task(
+                        $taskData['title'],
+                        $taskData['description'],
+                        $taskData['priority'],
+                        $taskData['status'],
+                        $taskData['type'],
+                        new DateTime($taskData['due_date'] ?? 'now'),
+                        null,
+                        $taskData['created_by'],
+                        $taskData['id']
+                    );
+                } catch (Exception $e) {
+                    error_log("Erreur lors de la création de l'objet Task : " . $e->getMessage());
+                }
+            }
+
+            return $tasks;
+        } catch (PDOException $e) {
+            error_log("ERREUR PDO lors de la récupération des tâches : " . $e->getMessage());
+            return [];
         }
-
-        $stmt->execute();
-        $tasksData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $tasks = [];
-        foreach ($tasksData as $taskData) {
-            $tasks[] = new Task(
-                $taskData['title'],
-                $taskData['description'],
-                $taskData['priority'],
-                $taskData['status'],
-                $taskData['type'],
-                new DateTime($taskData['due_date'] ?? 'now'),
-                null,
-                $taskData['created_by'],
-                $taskData['id']
-            );
-        }
-
-        return $tasks;
     }
 }
