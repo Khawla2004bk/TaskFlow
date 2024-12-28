@@ -6,6 +6,7 @@
     <title>TaskMaster Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="assets/showtask.css">
     <script src="https://cdn.tailwindcss.com"></script>
   <style>
         .form-container {
@@ -286,7 +287,7 @@
             <a href="#" class="logo">TaskFlow</a>
             <button id="addTaskBtn" class="add-task-btn">Add New Task</button>
             <button id="inviter" class="inviter">Inviter</button>
-            <button id="logoutBtn" class="btn btn-danger">Logout</button>
+            <button id="logout" class="logout btn btn-danger">Logout</button>
         </div>
     </header>
 
@@ -486,6 +487,7 @@
 
     <script src="assets/showtask.js" ></script>
     <script src="assets/details.js" ></script>
+    <script src="assets/logout.js" ></script>
 
    
 </body>

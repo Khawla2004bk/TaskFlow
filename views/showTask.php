@@ -106,6 +106,7 @@ include_once __DIR__ . '/../config/helper.php';
    
     
     <script src="assets/showtask.js" ></script>
+    <script src="assets/logout.js" ></script>
 
    
 </body>
