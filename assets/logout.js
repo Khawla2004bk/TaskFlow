@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (logoutButton) {
         logoutButton.addEventListener('click', () => {
-            fetch('../api/logout.php')
+            fetch('api/logout.php')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
