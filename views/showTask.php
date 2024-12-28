@@ -13,7 +13,7 @@ include_once __DIR__ . '/../config/helper.php';
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/style.css">
     <link rel="stylesheet" href="assets/showtask.css">
-
+    <script src="https://cdn.tailwindcss.com"></script>
   
 </head>
     <header class="header">
@@ -47,8 +47,8 @@ include_once __DIR__ . '/../config/helper.php';
         </div>
     </div>
 
-    <!-- <div id="taskModal" class="modal">
-        <div class="modal-content">
+     <div id="detailsModal" class="modal">
+     <!--  <div class="modal-content">
             <h2 style="margin-bottom: 1.5rem; font-size: 1.5rem;">Add New Task</h2>
             <form id="taskForm">
                 <div class="form-group">
@@ -105,7 +105,7 @@ include_once __DIR__ . '/../config/helper.php';
 
    
     
-    <script src="assets/showtask.js" ></script>
+    <script src="assets/usertasks.js" ></script>
     <script src="assets/logout.js" ></script>
 
    

@@ -412,6 +412,13 @@ class Task {
                 return false;
             }
 
+            // Vérifier le rôle de l'utilisateur qui assigne
+            $assignerRoleQuery = "SELECT role FROM Users WHERE id = :assigned_by";
+            $assignerStmt = $pdo->prepare($assignerRoleQuery);
+            $assignerStmt->bindParam(':assigned_by', $assignedBy, PDO::PARAM_INT);
+            $assignerStmt->execute();
+            $assignerRole = $assignerStmt->fetchColumn();
+
             // Début de la transaction
             $pdo->beginTransaction();
 
@@ -426,15 +433,16 @@ class Task {
 
             // Assignation pour chaque utilisateur
             foreach ($userIds as $userId) {
-                // Vérifier que l'utilisateur existe
-                $userCheckQuery = "SELECT * FROM Users WHERE id = :user_id";
+                // Vérifier que l'utilisateur existe et son rôle
+                $userCheckQuery = "SELECT role FROM Users WHERE id = :user_id";
                 $userCheckStmt = $pdo->prepare($userCheckQuery);
                 $userCheckStmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
                 $userCheckStmt->execute();
-                $user = $userCheckStmt->fetch(PDO::FETCH_ASSOC);
+                $userRole = $userCheckStmt->fetchColumn();
 
-                if (!$user) {
-                    error_log("Erreur : Utilisateur non trouvé - UserId: $userId");
+                // Si l'assigneur est un admin, il ne peut assigner qu'à des utilisateurs (rôle 2)
+                if ($assignerRole == 1 && $userRole != 2) {
+                    error_log("Erreur : Un admin ne peut assigner des tâches qu'aux utilisateurs - UserId: $userId");
                     $pdo->rollBack();
                     return false;
                 }

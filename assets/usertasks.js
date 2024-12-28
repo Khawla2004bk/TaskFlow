@@ -1,7 +1,7 @@
 // ********************* gestion des taches *****************
 
 const addTaskBtn = document.getElementById('addTaskBtn');
-const taskModal = document.getElementById('taskModal');
+// const taskModal = document.getElementById('taskModal');
 const taskForm = document.getElementById('taskForm');
 const cancelBtn = document.getElementById('cancelBtn');
 const columns = {
@@ -103,7 +103,7 @@ Object.values(columns).forEach(column => {
             const taskId = draggingTask.dataset.id;
 
             // Envoyer une requête pour mettre à jour le statut
-            fetch('api/update_task_status.php', {
+            fetch('../api/update_task_status.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -171,36 +171,14 @@ function showTaskDetails(taskId) {
                         <span class="text-gray-400 text-sm">Due: ${task.dueDate}</span>
                     </div>
                 </div>
-
-                <!-- Content -->
-                <div class="p-6 space-y-6">
-                    <!-- Assignment Section -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Assign to
-                        </label>
-                        <div class="relative">
-                            <input 
-                                type="email" 
-                                id="assignEmail"
-                                placeholder="Enter email address"
-                                class="custom-input w-full px-4 py-2 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none"
-                            >
-                            <button 
-                                onclick="assignTask()"
-                                class="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors duration-200"
-                            >
-                                Assign
-                            </button>
-                        </div>
-                    </div>
-                </div>
                 <div class="space-y-4">
                     <div>
                         <h3 class="text-sm font-medium text-gray-700 mb-2">Description</h3>
                         <p class="text-gray-600">${task.description}</p></p>
                         </div>
                 </div>
+
+                
             </div>
         </div>
     `;
@@ -241,7 +219,7 @@ function mapStatusToColumn(status) {
 
 // Fonction pour charger les tâches existantes
 function loadTasks() {
-    fetch('api/get_tasks.php')
+    fetch('../api/get_tasks.php')
     .then(response => {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -282,137 +260,3 @@ function loadTasks() {
 
 // Charger les tâches au chargement de la page
 document.addEventListener('DOMContentLoaded', loadTasks);
-
-addTaskBtn.addEventListener('click', () => showModal(taskModal));
-cancelBtn.addEventListener('click', () => hideModal(taskModal));
-taskModal.addEventListener('click', e => {
-    if (e.target === taskModal) hideModal(taskModal);
-});
-
-taskForm.addEventListener('submit', e => {
-    e.preventDefault();
-    
-    const task = {
-        id: Date.now(),
-        title: taskForm.title.value,
-        description: taskForm.description.value || '',
-        priority: taskForm.priority.value,
-        type: taskForm.type.value,
-        dueDate: taskForm.dueDate.value || null,
-        status: mapStatusToText(taskForm.status.value)
-    };
-
-    fetch('api/add_task.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(task)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
-            task.id = data.taskId;
-            addTask(task);
-            hideModal(taskModal);
-        } else {
-            console.error('Erreur lors de l\'ajout de la tâche:', data.message);
-            alert('Impossible d\'ajouter la tâche : ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Erreur d\'ajout de la tâche:', error);
-        alert('Erreur d\'ajout de la tâche');
-    });
-});
-
-// ******************* form invite *******************
-
-const formContainer = document.getElementById('form-container');
-const inviter = document.getElementById('inviter');
-
-formContainer.style.display='none'
-inviter.addEventListener('click',function(){
-   
-    formContainer.style.display='block' 
-});
-
-document.getElementById('cancel').addEventListener('click',function(){
-   formContainer.style.display='none'
-
-});
-
-function assignTask() {
-    const assignEmailInput = document.getElementById('assignEmail');
-    const email = assignEmailInput.value.trim();
-    const detailsModal = document.getElementById('detailsModal');
-    const modalContent = detailsModal.querySelector('.modal-content');
-    const taskId = modalContent ? parseInt(modalContent.dataset.taskId, 10) : null;
-
-    console.log('Debug assignTask:', {
-        email: email,
-        taskId: taskId,
-        modalContent: modalContent,
-        detailsModal: detailsModal
-    });
-
-    if (!email || !taskId) {
-        console.error('Email ou taskId invalide:', {
-            email: email,
-            taskId: taskId
-        });
-        alert('Veuillez saisir une adresse email valide et sélectionner une tâche');
-        return;
-    }
-
-    fetch('api/assign_task.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `email=${encodeURIComponent(email)}&task_id=${taskId}`
-    })
-    .then(response => {
-        // Vérifier le statut de la réponse
-        if (!response.ok) {
-            // Tenter de lire le contenu de la réponse pour plus de détails
-            return response.text().then(text => {
-                console.error('Réponse d\'erreur:', text);
-                throw new Error(`Erreur HTTP: ${response.status} - ${text}`);
-            });
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Réponse du serveur:', data);
-        
-        // Vérifier explicitement la propriété success
-        if (data.success === true) {
-            alert('Tâche assignée avec succès');
-            assignEmailInput.value = '';
-        } else {
-            // Afficher un message d'erreur détaillé
-            const errorMessage = data.message || 'Erreur lors de l\'assignation de la tâche';
-            console.error('Erreur d\'assignation:', errorMessage);
-            alert(errorMessage);
-        }
-    })
-    .catch(error => {
-        console.error('Erreur de requête:', error);
-        
-        // Message d'erreur plus informatif
-        let errorMessage = 'Une erreur est survenue lors de l\'assignation';
-        if (error instanceof TypeError) {
-            errorMessage += ' (problème de réseau ou de connexion)';
-        } else if (error.message) {
-            errorMessage += `: ${error.message}`;
-        }
-        
-        alert(errorMessage);
-    });
-}
