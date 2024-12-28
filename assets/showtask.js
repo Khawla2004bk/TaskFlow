@@ -291,7 +291,7 @@ document.getElementById('logoutBtn')?.addEventListener('click', () => {
         .then(data => {
             if (data.success) {
                 // Rediriger vers la page de connexion
-                window.location.href = '../index.php';
+                window.location.href = data.redirect;
             } else {
                 // Optionnel : Gérer l'erreur
             }
