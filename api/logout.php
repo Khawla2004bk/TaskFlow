@@ -10,7 +10,7 @@ header('Content-Type: application/json');
 echo json_encode([
     'success' => true,
     'redirect' => 'index.php?page=login',
-    'message' => 'Déconnexion réussie'
+    'message' => 'Logout successful'
 ]);
 exit();
 ?>

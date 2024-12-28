@@ -28,17 +28,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $password = $_POST['password'] ?? '';
         $confirm_password = $_POST['confirm_password'] ?? '';
         
-        error_log("Données nettoyées - Nom : $name, Email : $email");
+        // Stocker les données du formulaire en session pour les réafficher
+        $_SESSION['signup_form'] = [
+            'name' => $name,
+            'email' => $email
+        ];
         
-        $role = filter_var($_POST['role'] ?? Role::USER, FILTER_VALIDATE_INT, [
-            'options' => [
-                'max_range' => Role::ADMIN
-            ],
-            'default' => Role::USER
-        ]);
-
-        error_log("Rôle : $role");
-
         if (empty($name) || empty($email) || empty($password) || empty($confirm_password)) {
             throw new InvalidArgumentException('Tous les champs sont obligatoires.');
         }
@@ -51,9 +46,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             throw new InvalidArgumentException('Le mot de passe doit contenir au moins 8 caractères.');
         }
 
+        // Vérification de la complexité du mot de passe
+        if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', $password)) {
+            throw new InvalidArgumentException('Le mot de passe doit contenir au moins : 
+                - Une lettre minuscule
+                - Une lettre majuscule
+                - Un chiffre
+                - Un caractère spécial');
+        }
+
         if ($password !== $confirm_password) {
             throw new InvalidArgumentException('Les mots de passe ne correspondent pas.');
         }
+
+        $role = filter_var($_POST['role'] ?? Role::USER, FILTER_VALIDATE_INT, [
+            'options' => [
+                'max_range' => Role::ADMIN
+            ],
+            'default' => Role::USER
+        ]);
+
+        error_log("Rôle : $role");
 
         $user = new User($name, $email, $password, $role);
         $saveResult = $user->save();
@@ -61,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         error_log("Résultat de sauvegarde : " . ($saveResult ? 'Succès' : 'Échec'));
 
         if (!$saveResult) {
-            throw new Exception('Impossible de créer l\'utilisateur. Vérifiez les logs pour plus de détails.');
+            throw new Exception('Impossible de créer l\'utilisateur. L\'email existe peut-être déjà.');
         }
 
         $loginResult = $userController->login($email, $password);
@@ -69,7 +82,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         error_log("Résultat de connexion : " . ($loginResult ? 'Succès' : 'Échec'));
         
         if ($loginResult) {
-            $redirect = ($role == Role::USER) ? 'index.php?page=user' : 'index.php?page=login';
+            // Nettoyer les données de formulaire en session
+            unset($_SESSION['signup_form']);
+            unset($_SESSION['signup_error']);
+
+            $redirect = ($role == Role::USER) ? 'index.php?page=user' : 'index.php?page=admin';
             header("Location: $redirect");
             exit();
         } else {
@@ -77,8 +94,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
     } catch (Exception $e) {
-        error_log("Erreur d'inscription : " . $e->getMessage());
-        $error = $e->getMessage();
+        // Stocker l'erreur en session pour l'afficher sur la page de signup
+        $_SESSION['signup_error'] = $e->getMessage();
+        
+        // Rediriger vers la page de signup
+        header("Location: index.php?page=signup");
+        exit();
     }
 }
 

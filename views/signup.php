@@ -4,6 +4,11 @@ include_once __DIR__ . "/../controllers/signupcontr.php";
 // include_once __DIR__ . "../config/connexion.php";
 // include "controllers/login.php";
 // include "controllers/signup.php";
+
+// Récupérer l'erreur de session
+$signupError = $_SESSION['signup_error'] ?? '';
+// Effacer l'erreur de session après l'avoir récupérée
+unset($_SESSION['signup_error']);
 ?>
 
 <!DOCTYPE html>
@@ -55,9 +60,14 @@ include_once __DIR__ . "/../controllers/signupcontr.php";
     <div class="glass w-full max-w-4xl flex rounded-xl overflow-hidden">
         <div class="w-1/2 bg-white p-12 flex flex-col justify-center">
             <h2 class="text-4xl font-bold mb-6 text-gray-800">Create Your Account</h2>
-            <?php if ($error): ?>
-                <div class="error-message"><?= htmlspecialchars($error) ?></div>
+            
+            <?php if (!empty($signupError)): ?>
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <strong class="font-bold">Erreur : </strong>
+                    <span class="block sm:inline"><?= htmlspecialchars($signupError) ?></span>
+                </div>
             <?php endif; ?>
+            
             <p class="text-gray-600 mb-8">Elevate your productivity to new heights.</p>
             <form method="post" action="index.php?action=signupcontr">
             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
