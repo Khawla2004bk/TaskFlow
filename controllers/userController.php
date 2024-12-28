@@ -17,14 +17,44 @@ class UserController {
     }
 
     public function login(string $email, string $password) {
-        $user = User::login($email, $password);
+        try {
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
 
-        if ($user) {
-            $this->currentUser = $user;
-            $_SESSION['user_id'] = $user->getId();
-            return true;
+            $pdo = DatabaseConfig::getConnection();
+            $stmt = $pdo->prepare("SELECT * FROM Users WHERE email = ?");
+            $stmt->execute([$email]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($user && password_verify($password, $user['password'])) {
+                // Stocker l'ID utilisateur dans la session
+                $_SESSION['user_id'] = (int)$user['id'];
+                $_SESSION['user_role'] = (int)$user['role'];
+                
+                // Log de débogage
+                error_log("Connexion réussie pour l'utilisateur ID: " . $_SESSION['user_id']);
+
+                return [
+                    'success' => true,
+                    'message' => 'Connexion réussie',
+                    'user_id' => $user['id'],
+                    'user_role' => $user['role']
+                ];
+            } else {
+                error_log("Échec de connexion pour l'email: $email");
+                return [
+                    'success' => false,
+                    'message' => 'Email ou mot de passe incorrect'
+                ];
+            }
+        } catch (PDOException $e) {
+            error_log("Erreur de connexion : " . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Erreur de connexion : ' . $e->getMessage()
+            ];
         }
-        return false;
     }
 
     public function logout() {
@@ -33,7 +63,30 @@ class UserController {
     }
 
     public function getUser(): ?User {
-        return $this->currentUser ?? null;
-    }
+        if (!isset($_SESSION['user_id'])) {
+            return null;
+        }
 
+        try {
+            $pdo = DatabaseConfig::getConnection();
+            $stmt = $pdo->prepare("SELECT * FROM Users WHERE id = ?");
+            $stmt->execute([$_SESSION['user_id']]);
+            $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($userData) {
+                return new User(
+                    $userData['name'], 
+                    $userData['email'], 
+                    $userData['password'], 
+                    $userData['role'], 
+                    $userData['id']
+                );
+            }
+
+            return null;
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération de l'utilisateur : " . $e->getMessage());
+            return null;
+        }
+    }
 }

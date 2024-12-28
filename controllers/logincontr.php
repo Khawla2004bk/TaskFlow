@@ -11,10 +11,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
 
     try {
-        if ($userController->login($email, $password)) {
-            $user = $userController->getUser();
-            
-            if ($user->getRole() === 1) {
+        $loginResult = $userController->login($email, $password);
+        
+        if ($loginResult['success']) {
+            if ($loginResult['user_role'] === 1) {
                 header('Location: index.php?page=admin');
                 exit();
             } else {
@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit();
             }
         } else {
-            $error = 'Identifiants incorrects.';
+            $error = $loginResult['message'];
         }
     } catch (Exception $e) {
         $error = $e->getMessage();

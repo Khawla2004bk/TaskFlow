@@ -286,6 +286,7 @@
             <a href="#" class="logo">TaskFlow</a>
             <button id="addTaskBtn" class="add-task-btn">Add New Task</button>
             <button id="inviter" class="inviter">Inviter</button>
+            <button id="logoutBtn" class="btn btn-danger">Déconnexion</button>
         </div>
     </header>
 

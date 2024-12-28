@@ -175,17 +175,19 @@ body {
     font-weight: 500;
 }
 
-.priority-high {
+
+
+.priority-high, .priority-3 {
     background: var(--priority-high);
     color: white;
 }
 
-.priority-medium {
+.priority-medium, .priority-2 {
     background: var(--priority-medium);
     color: white;
 }
 
-.priority-low {
+.priority-low, .priority-1 {
     background: var(--priority-low);
     color: white;
 }

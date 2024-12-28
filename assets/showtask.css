@@ -214,17 +214,17 @@
               color: #155724;
           }
   
-          .task-priority.high {
+          .task-priority.high, .priority-3 {
               background: #f8d7da;
               color: #721c24;
           }
   
-          .task-priority.medium {
+          .task-priority.medium, .priority-2 {
               background: #fff3cd;
               color: #856404;
           }
   
-          .task-priority.low {
+          .task-priority.low, .priority-1 {
               background: #d4edda;
               color: #155724;
           }

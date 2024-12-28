@@ -27,6 +27,14 @@ function createTaskElement(task) {
     taskEl.draggable = true;
     taskEl.dataset.id = task.id;
     
+    // Mapping du texte de priorité
+    const priorityTextMap = {
+        '1': 'Basse',
+        '2': 'Moyenne', 
+        '3': 'Haute',
+        '4': 'Urgente'
+    };
+    
     taskEl.innerHTML = `
         <div id="header">
         <h3 class="task-title">${task.title}</h3>
@@ -34,7 +42,7 @@ function createTaskElement(task) {
         </div>
         <p class="task-description">${task.description}</p>
         <div class="task-meta">
-            <span class="priority priority-${task.priority}">${task.priority}</span>
+            <span class="priority priority-${task.priority}">${priorityTextMap[task.priority] || 'Basse'}</span>
             <span>${task.dueDate}</span>
         </div>
         <i class="fas fa-info-circle details-icon" onclick="showTaskDetails(${task.id})"></i>
@@ -120,6 +128,16 @@ function mapStatusToText(statusValue) {
     return statusMap[statusValue] || 'to-do';
 }
 
+function mapPriorityToText(priority) {
+    const priorityMap = {
+        '1': 'Basse',
+        '2': 'Moyenne',
+        '3': 'Haute',
+        '4': 'Urgente'
+    };
+    return priorityMap[priority] || 'Basse';
+}
+
 function mapStatusToColumn(status) {
     const columnMap = {
         'to-do': document.querySelector('#todo-column .tasks'),
@@ -130,6 +148,52 @@ function mapStatusToColumn(status) {
     console.log('Target column:', columnMap[status]);
     return columnMap[status] || columnMap['to-do'];
 }
+
+// Fonction pour charger les tâches existantes
+function loadTasks() {
+    console.log('Chargement des tâches...');
+    fetch('../api/get_tasks.php')
+    .then(response => {
+        console.log('Réponse du serveur:', response);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Données reçues:', data);
+        if (data.success) {
+            // Vider d'abord toutes les colonnes
+            Object.values(columns).forEach(column => {
+                column.innerHTML = '';
+            });
+
+            // Réinitialiser le tableau de tâches
+            tasks = [];
+
+            // Ajouter chaque tâche
+            data.tasks.forEach(task => {
+                console.log('Ajout de la tâche:', task);
+                addTask({
+                    id: task.id,
+                    title: task.title,
+                    description: task.description || '',
+                    priority: task.priority, // Garder le numéro de priorité
+                    status: mapStatusToText(task.status),
+                    dueDate: task.due_date
+                });
+            });
+        } else {
+            console.error('Erreur lors du chargement des tâches:', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Erreur de chargement des tâches:', error);
+    });
+}
+
+// Charger les tâches au chargement de la page
+document.addEventListener('DOMContentLoaded', loadTasks);
 
 addTaskBtn.addEventListener('click', showModal);
 cancelBtn.addEventListener('click', hideModal);
@@ -186,32 +250,32 @@ taskForm.addEventListener('submit', e => {
 });
 
 // Add some sample tasks
-[
-    {
-        id: 1,
-        title: 'Implement new feature',
-        description: 'Add user authentication to the app',
-        priority: 'high',
-        dueDate: '2023-06-30',
-        status: "to-do"
-    },
-    {
-        id: 2,
-        title: 'Fix critical bug',
-        description: 'Address performance issue in production',
-        priority: 'high',
-        dueDate: '2023-06-25',
-        status: "in-progress"
-    },
-    {
-        id: 3,
-        title: 'Design review',
-        description: 'Complete UI/UX review for new features',
-        priority: 'low',
-        dueDate: '2023-06-20',
-        status: "completed"
-    }
-].forEach(task => addTask(task));
+// [
+//     {
+//         id: 1,
+//         title: 'Implement new feature',
+//         description: 'Add user authentication to the app',
+//         priority: 'high',
+//         dueDate: '2023-06-30',
+//         status: "to-do"
+//     },
+//     {
+//         id: 2,
+//         title: 'Fix critical bug',
+//         description: 'Address performance issue in production',
+//         priority: 'high',
+//         dueDate: '2023-06-25',
+//         status: "in-progress"
+//     },
+//     {
+//         id: 3,
+//         title: 'Design review',
+//         description: 'Complete UI/UX review for new features',
+//         priority: 'low',
+//         dueDate: '2023-06-20',
+//         status: "completed"
+//     }
+// ].forEach(task => addTask(task));
 
 // ******************* form invite *******************
 
@@ -228,4 +292,23 @@ inviter.addEventListener('click',function(){
 document.getElementById('cancel').addEventListener('click',function(){
    formContainer.style.display='none'
 
+});
+
+// Gestion de la déconnexion
+document.getElementById('logoutBtn')?.addEventListener('click', () => {
+    fetch('../api/logout.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Rediriger vers la page de connexion
+                window.location.href = '../index.php';
+            } else {
+                console.error('Erreur de déconnexion:', data.message);
+                alert('Erreur lors de la déconnexion');
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            alert('Une erreur est survenue');
+        });
 });

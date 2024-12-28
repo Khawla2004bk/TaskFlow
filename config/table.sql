@@ -48,10 +48,12 @@ CREATE TABLE Tasks (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     due_date DATE,
+    created_by INT(11);
     FOREIGN KEY (type) REFERENCES TaskTypes(id),
     FOREIGN KEY (status) REFERENCES TaskStatus(id),
     FOREIGN KEY (priority) REFERENCES Priority(id),
-    FOREIGN KEY (assigned_user_id) REFERENCES Users(id)
+    FOREIGN KEY (assigned_user_id) REFERENCES Users(id),
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE Table UsersTasks (
@@ -63,7 +65,7 @@ CREATE Table UsersTasks (
     FOREIGN KEY (assigned_by) REFERENCES Users(id) ON DELETE CASCADE,
     FOREIGN KEY (task_id) REFERENCES Tasks(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE
-);
+);    
 
 INSERT INTO Roles (name, description) VALUES
 ('admin', 'Administrateur avec tous les droits'),

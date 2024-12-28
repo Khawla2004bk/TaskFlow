@@ -417,54 +417,50 @@ class Task {
     }
 
     public static function getTasksForUser(int $userId, array $filters = []): array {
-        try {
-            $pdo = DatabaseConfig::getConnection();
-            
-            $query = "
-                SELECT t.* 
-                FROM Tasks t
-                JOIN UsersTasks ut ON t.id = ut.task_id
-                WHERE ut.user_id = ?
-            ";
-            $params = [$userId];
+        $pdo = DatabaseConfig::getConnection();
+        
+        // Ajouter un filtre explicite sur les tâches créées par l'utilisateur
+        $filters['created_by'] = $userId;
 
-            if (!empty($filters['status'])) {
-                $query .= " AND t.status = ? ";
-                $params[] = $filters['status'];
+        $query = "SELECT * FROM Tasks WHERE created_by = :userId";
+        
+        // Ajouter des filtres supplémentaires si nécessaire
+        if (!empty($filters)) {
+            foreach ($filters as $key => $value) {
+                if ($key !== 'created_by') {
+                    $query .= " AND $key = :$key";
+                }
             }
-
-            if (!empty($filters['type'])) {
-                $query .= " AND t.type = ? ";
-                $params[] = $filters['type'];
-            }
-
-            if (!empty($filters['priority'])) {
-                $query .= " AND t.priority = ? ";
-                $params[] = $filters['priority'];
-            }
-
-            $stmt = $pdo->prepare($query);
-            $stmt->execute($params);
-
-            $tasks = [];
-            while ($taskData = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $tasks[] = new Task(
-                    $taskData['title'],
-                    $taskData['description'],
-                    $taskData['priority'],
-                    $taskData['status'],
-                    $taskData['type'],
-                    new DateTime($taskData['due_date']),
-                    $userId,
-                    null,
-                    $taskData['id']
-                );
-            }
-
-            return $tasks;
-        } catch (PDOException $e) {
-            error_log("Erreur lors de la récupération des tâches de l'utilisateur : " . $e->getMessage());
-            return [];
         }
+
+        $stmt = $pdo->prepare($query);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+
+        // Lier les autres filtres
+        foreach ($filters as $key => $value) {
+            if ($key !== 'created_by') {
+                $stmt->bindValue(":$key", $value);
+            }
+        }
+
+        $stmt->execute();
+        $tasksData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $tasks = [];
+        foreach ($tasksData as $taskData) {
+            $tasks[] = new Task(
+                $taskData['title'],
+                $taskData['description'],
+                $taskData['priority'],
+                $taskData['status'],
+                $taskData['type'],
+                new DateTime($taskData['due_date']),
+                null,
+                $taskData['created_by'],
+                $taskData['id']
+            );
+        }
+
+        return $tasks;
     }
 }

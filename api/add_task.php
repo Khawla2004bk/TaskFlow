@@ -76,17 +76,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     error_log('Received task data: ' . print_r($data, true));
 
+    // Récupérer l'ID de l'utilisateur connecté
+    session_start();
+    $createdBy = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+
     try {
         $pdo = DatabaseConfig::getConnection();
 
-        $stmt = $pdo->prepare("INSERT INTO tasks (title, description, type, status, priority, due_date) VALUES (?, ?, ?, ?, ?, ?)");
+        // Modifier la requête pour inclure created_by
+        $stmt = $pdo->prepare("INSERT INTO tasks (title, description, type, status, priority, due_date, created_by) VALUES (?, ?, ?, ?, ?, ?, ?)");
         
+        // Bind parameters
         $stmt->bindValue(1, $data['title'], PDO::PARAM_STR);
         $stmt->bindValue(2, $data['description'] ?? '', PDO::PARAM_STR);
         $stmt->bindValue(3, $typeId, PDO::PARAM_INT);
         $stmt->bindValue(4, $statusId, PDO::PARAM_INT);
         $stmt->bindValue(5, $priorityId, PDO::PARAM_INT);
         $stmt->bindValue(6, $dueDate, PDO::PARAM_STR);
+        $stmt->bindValue(7, $createdBy, PDO::PARAM_INT);
 
         if ($stmt->execute()) {
             $taskId = $pdo->lastInsertId();
@@ -98,10 +105,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'title' => $data['title'],
                     'type' => $typeId,
                     'status' => $statusId,
-                    'priority' => $priorityId
+                    'priority' => $priorityId,
+                    'created_by' => $createdBy
                 ]
             ]);
         } else {
+            // Gestion des erreurs comme précédemment
             $errorInfo = $stmt->errorInfo();
             error_log('Database Error: ' . print_r($errorInfo, true));
             error_log('SQL Error Details: ' . json_encode([
