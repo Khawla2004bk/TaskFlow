@@ -1,9 +1,18 @@
-const taskModal =document.getElementById('taskModal');
-const icon = document.getElementById('icon');
+document.addEventListener('DOMContentLoaded', () => {
+   const detailsModal = document.getElementById('detailsModal');
 
+   function showModal() {
+      detailsModal.classList.add('active');
+   }
 
-taskModal.style.display="none";
-icon.addEventListener('click',function(){
-   taskModal.style.display="block";
+   // function hideModal() {
+   //    detailsModal.classList.remove('active');
+   // }
 
+   // const cancelBtn = document.getElementById('cancelBtn');
+
+   const icone = document.getElementById('icon');
+   console.log(icone);
+
+   icone.addEventListener('click', showModal);
 });

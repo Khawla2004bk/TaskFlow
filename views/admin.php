@@ -388,10 +388,10 @@
 
 
     <!-- *************************details ***************** -->
-    <div id="taskModal" class="modal fixed inset-0 z-50 hidden">
-        <div class="modal-backdrop absolute inset-0 flex items-center justify-center">
+    <div id="detailsModal" class="modal fixed inset-0 z-50">
+        <!-- <div class="modal-backdrop absolute inset-0 flex items-center justify-center">
             <div class="modal-content bg-white rounded-2xl shadow-xl max-w-lg w-full mx-4">
-                <!-- Header -->
+                Header
                 <div class="p-6 border-b border-gray-100">
                     <div class="flex justify-between items-start">
                         <div>
@@ -413,9 +413,9 @@
                     </div>
                 </div>
 
-                <!-- Content -->
+                Content
                 <div class="p-6 space-y-6">
-                    <!-- Assignment Section -->
+                    Assignment Section
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Assign to
@@ -436,7 +436,7 @@
                         </div>
                     </div>
 
-                    <!-- Details Section -->
+                    Details Section
                     <div class="space-y-4">
                         <div>
                             <h3 class="text-sm font-medium text-gray-700 mb-2">Description</h3>
@@ -466,7 +466,7 @@
                     </div>
                 </div>
 
-                <!-- Footer -->
+                Footer
                 <div class="p-6 border-t border-gray-100 flex justify-end gap-3">
                     <button 
                         onclick="closeModal()"
@@ -481,12 +481,12 @@
                     </button>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 
 
     <script src="assets/showtask.js" ></script>
-    <script src="assets/details.js" ></script>
+    <!-- <script src="assets/details.js" ></script> -->
     <script src="assets/logout.js" ></script>
 
    

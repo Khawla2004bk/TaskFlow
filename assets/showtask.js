@@ -12,13 +12,13 @@ const columns = {
 
 let tasks = [];
 
-function showModal() {
-    taskModal.classList.add('active');
+function showModal(modal) {
+    modal.classList.add('active');
 }
 
-function hideModal() {
-    taskModal.classList.remove('active');
-    taskForm.reset();
+function hideModal(modal) {
+    modal.classList.remove('active');
+    modal.reset();
 }
 
 function createTaskElement(task) {
@@ -32,20 +32,18 @@ function createTaskElement(task) {
         '1': 'Basse',
         '2': 'Moyenne', 
         '3': 'Haute',
-        '4': 'Urgente'
     };
     
     taskEl.innerHTML = `
         <div id="header">
         <h3 class="task-title">${task.title}</h3>
-        <a><img src="images/icon.png" id="icon" alt=""></a>
+        <a><img src="images/icon.png" id="icon" alt="" onclick="showTaskDetails(${task.id})"></a>
         </div>
         <p class="task-description">${task.description}</p>
         <div class="task-meta">
             <span class="priority priority-${task.priority}">${priorityTextMap[task.priority] || 'Basse'}</span>
             <span>${task.dueDate}</span>
         </div>
-        <i class="fas fa-info-circle details-icon" onclick="showTaskDetails(${task.id})"></i>
     `;
 
     return taskEl;
@@ -114,13 +112,12 @@ Object.values(columns).forEach(column => {
             })
             .then(response => response.json())
             .then(data => {
-                if (!data.success) {
+                // if (!data.success) {
                     // Optionnel : Annuler le déplacement visuel si la mise à jour échoue
-                }
+                // }
             })
             .catch(error => {});
 
-            // Retirer la classe de dragging
             draggingTask.classList.remove('dragging');
         });
     }
@@ -142,16 +139,93 @@ function getDragAfterElement(container, y) {
 }
 
 function showTaskDetails(taskId) {
+    const detailsModal = document.getElementById('detailsModal');
+    detailsModal.classList.add('active');
+    
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
 
-    alert(`
-Task Details:
-Title: ${task.title}
-Description: ${task.description}
-Priority: ${task.priority}
-Due Date: ${task.dueDate}
-    `);
+//     alert(`
+// Task Details:
+// Title: ${task.title}
+// Description: ${task.description}
+// Priority: ${task.priority}
+// Due Date: ${task.dueDate}
+//     `);
+
+    detailsModal.innerHTML = `
+        <div class="modal-backdrop absolute inset-0 flex items-center justify-center">
+            <div class="modal-content bg-white rounded-2xl shadow-xl max-w-lg w-full mx-4">
+                <div class="p-6 border-b border-gray-100">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h2 class="text-2xl font-semibold text-gray-800">${task.title}</h2>
+                        </div>
+                        <button 
+                            onclick="hideModal(detailsModal)"
+                            class="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                        >
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-4 mt-4">
+                        <span class="priority-${task.priority} text-white text-sm px-3 py-1 rounded-full">${mapPriorityToText(task.priority)}</span>
+                        <span class="text-gray-400 text-sm">Due: ${task.dueDate}</span>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="p-6 space-y-6">
+                    <!-- Assignment Section -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Assign to
+                        </label>
+                        <div class="relative">
+                            <input 
+                                type="email" 
+                                id="assignEmail"
+                                placeholder="Enter email address"
+                                class="custom-input w-full px-4 py-2 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none"
+                            >
+                            <button 
+                                onclick="assignTask()"
+                                class="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors duration-200"
+                            >
+                                Assign
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Details Section -->
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-700 mb-2">Description</h3>
+                            <p class="text-gray-600">${task.description}</p>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="p-6 border-t border-gray-100 flex justify-end gap-3">
+                    <button 
+                        onclick="hideModal(detailsModal)"
+                        class="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200"
+                    >
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 function mapStatusToText(statusValue) {
@@ -223,10 +297,10 @@ function loadTasks() {
 // Charger les tâches au chargement de la page
 document.addEventListener('DOMContentLoaded', loadTasks);
 
-addTaskBtn.addEventListener('click', showModal);
-cancelBtn.addEventListener('click', hideModal);
+addTaskBtn.addEventListener('click', () => showModal(taskModal));
+cancelBtn.addEventListener('click', () => hideModal(taskModal));
 taskModal.addEventListener('click', e => {
-    if (e.target === taskModal) hideModal();
+    if (e.target === taskModal) hideModal(taskModal);
 });
 
 taskForm.addEventListener('submit', e => {
@@ -259,7 +333,7 @@ taskForm.addEventListener('submit', e => {
         if (data.success) {
             task.id = data.taskId;
             addTask(task);
-            hideModal();
+            hideModal(taskModal);
         } else {
             // Optionnel : Gérer l'erreur
         }
