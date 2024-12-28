@@ -364,7 +364,7 @@ function assignTask() {
         return;
     }
 
-    fetch('api/debug_assign_task.php', {
+    fetch('api/assign_task.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
