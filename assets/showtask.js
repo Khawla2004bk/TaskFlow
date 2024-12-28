@@ -52,12 +52,10 @@ function createTaskElement(task) {
 }
 
 function addTask(task) {
-    console.log('Adding task:', task);
     tasks.push(task);
     const taskEl = createTaskElement(task);
     
     const targetColumn = mapStatusToColumn(task.status);
-    console.log('Target column for task:', targetColumn);
     targetColumn.appendChild(taskEl);
     
     setupDragAndDrop(taskEl);
@@ -87,6 +85,43 @@ Object.values(columns).forEach(column => {
                     column.appendChild(dragging);
                 }
             }
+        });
+
+        column.addEventListener('drop', e => {
+            e.preventDefault();
+            const draggingTask = document.querySelector('.dragging');
+            if (!draggingTask) return;
+
+            // Déterminer le nouveau statut en fonction de la colonne
+            let newStatus;
+            if (column.closest('#todo-column')) {
+                newStatus = 1; // to-do
+            } else if (column.closest('#inprogress-column')) {
+                newStatus = 2; // in-progress
+            } else if (column.closest('#done-column')) {
+                newStatus = 3; // completed
+            }
+
+            const taskId = draggingTask.dataset.id;
+
+            // Envoyer une requête pour mettre à jour le statut
+            fetch('../api/update_task_status.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `task_id=${taskId}&new_status=${newStatus}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    // Optionnel : Annuler le déplacement visuel si la mise à jour échoue
+                }
+            })
+            .catch(error => {});
+
+            // Retirer la classe de dragging
+            draggingTask.classList.remove('dragging');
         });
     }
 });
@@ -144,24 +179,19 @@ function mapStatusToColumn(status) {
         'in-progress': document.querySelector('#inprogress-column .tasks'),
         'completed': document.querySelector('#done-column .tasks')
     };
-    console.log('Mapping status:', status);
-    console.log('Target column:', columnMap[status]);
     return columnMap[status] || columnMap['to-do'];
 }
 
 // Fonction pour charger les tâches existantes
 function loadTasks() {
-    console.log('Chargement des tâches...');
     fetch('../api/get_tasks.php')
     .then(response => {
-        console.log('Réponse du serveur:', response);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         return response.json();
     })
     .then(data => {
-        console.log('Données reçues:', data);
         if (data.success) {
             // Vider d'abord toutes les colonnes
             Object.values(columns).forEach(column => {
@@ -173,7 +203,6 @@ function loadTasks() {
 
             // Ajouter chaque tâche
             data.tasks.forEach(task => {
-                console.log('Ajout de la tâche:', task);
                 addTask({
                     id: task.id,
                     title: task.title,
@@ -184,12 +213,11 @@ function loadTasks() {
                 });
             });
         } else {
-            console.error('Erreur lors du chargement des tâches:', data.message);
+            // Optionnel : Gérer l'erreur
         }
     })
-    .catch(error => {
-        console.error('Erreur de chargement des tâches:', error);
-    });
+    .catch(error => {});
+
 }
 
 // Charger les tâches au chargement de la page
@@ -233,55 +261,17 @@ taskForm.addEventListener('submit', e => {
             addTask(task);
             hideModal();
         } else {
-            console.error('Server error:', data.error);
-            alert(`Erreur lors de l'ajout de la tâche : 
-                Détails de l'erreur : ${data.error}
-                Données envoyées : 
-                - Titre : ${task.title}
-                - Type : ${task.type}
-                - Statut : ${task.status}
-                - Priorité : ${task.priority}`);
+            // Optionnel : Gérer l'erreur
         }
     })
-    .catch(error => {
-        console.error('Fetch Error:', error);
-        alert('Une erreur est survenue lors de l\'ajout de la tâche. Veuillez vérifier la console pour plus de détails.');
-    });
-});
+    .catch(error => {});
 
-// Add some sample tasks
-// [
-//     {
-//         id: 1,
-//         title: 'Implement new feature',
-//         description: 'Add user authentication to the app',
-//         priority: 'high',
-//         dueDate: '2023-06-30',
-//         status: "to-do"
-//     },
-//     {
-//         id: 2,
-//         title: 'Fix critical bug',
-//         description: 'Address performance issue in production',
-//         priority: 'high',
-//         dueDate: '2023-06-25',
-//         status: "in-progress"
-//     },
-//     {
-//         id: 3,
-//         title: 'Design review',
-//         description: 'Complete UI/UX review for new features',
-//         priority: 'low',
-//         dueDate: '2023-06-20',
-//         status: "completed"
-//     }
-// ].forEach(task => addTask(task));
+});
 
 // ******************* form invite *******************
 
 const formContainer = document.getElementById('form-container');
 const inviter = document.getElementById('inviter');
-console.log(formContainer)
 
 formContainer.style.display='none'
 inviter.addEventListener('click',function(){
@@ -303,12 +293,9 @@ document.getElementById('logoutBtn')?.addEventListener('click', () => {
                 // Rediriger vers la page de connexion
                 window.location.href = '../index.php';
             } else {
-                console.error('Erreur de déconnexion:', data.message);
-                alert('Erreur lors de la déconnexion');
+                // Optionnel : Gérer l'erreur
             }
         })
-        .catch(error => {
-            console.error('Erreur:', error);
-            alert('Une erreur est survenue');
-        });
+        .catch(error => {});
+
 });
