@@ -27,22 +27,60 @@ function createTaskElement(task) {
     taskEl.draggable = true;
     taskEl.dataset.id = task.id;
     
+    // Mapping des icônes pour les types de tâches
+    const taskTypeIcons = {
+        '1': '<i class="fas fa-list-alt text-blue-600 mr-2"></i>', // Basic - A more professional list icon
+        '2': '<i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>', // Bug - A warning/alert style icon
+        '3': '<i class="fas fa-lightbulb text-green-600 mr-2"></i>',  // Feature - A lightbulb for innovation
+        'basic': '<i class="fas fa-list-alt text-blue-600 mr-2"></i>',
+        'bug': '<i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>',
+        'feature': '<i class="fas fa-lightbulb text-green-600 mr-2"></i>'
+    };
+
+    const taskTypeLabels = {
+        '1': 'Basic',
+        '2': 'Bug',
+        '3': 'Feature',
+        'basic': 'Basic',
+        'bug': 'Bug',
+        'feature': 'Feature'
+    };
+
+    // Convert task.type to string to ensure consistent mapping
+    const taskTypeString = String(task.type).toLowerCase();
+    
+    const taskIcon = taskTypeIcons[taskTypeString] || ''; // Default to Basic icon
+    const taskTypeLabel = taskTypeLabels[taskTypeString] || 'Basic';
+    
     // Mapping du texte de priorité
     const priorityTextMap = {
         '1': 'Basse',
         '2': 'Moyenne', 
         '3': 'Haute',
     };
+
+    // Fonction pour tronquer la description
+    function truncateDescription(description, maxLength = 50) {
+        if (!description) return '';
+        return description.length > maxLength 
+            ? description.substring(0, maxLength) + '...' 
+            : description;
+    }
     
     taskEl.innerHTML = `
-        <div id="header">
-        <h3 class="task-title">${task.title}</h3>
-        <a><img src="images/icon.png" id="icon" alt="" onclick="showTaskDetails(${task.id})"></a>
+        <div id="header" class="flex justify-between items-center">
+            <h3 class="task-title flex items-center">
+                ${taskIcon} ${task.title}
+            </h3>
+            <a><img src="images/icon.png" id="icon" alt="" onclick="showTaskDetails(${task.id})"></a>
         </div>
-        <p class="task-description">${task.description}</p>
-        <div class="task-meta">
+        <p class="task-description text-gray-600 italic">
+            ${truncateDescription(task.description)}
+        </p>
+        <div class="task-meta flex justify-between items-center">
             <span class="priority priority-${task.priority}">${priorityTextMap[task.priority] || 'Basse'}</span>
-            <span>${task.dueDate}</span>
+            <span class="task-type flex items-center">${taskIcon} ${taskTypeLabel}</span>
+            <span>${task.dueDate || ''}</span>
         </div>
     `;
 
@@ -148,6 +186,35 @@ function showTaskDetails(taskId) {
         return;
     }
 
+    // Debug logging for task type
+    console.log('Task Type Raw:', task.type);
+    console.log('Task Type typeof:', typeof task.type);
+
+    // Mapping des types de tâches
+    const taskTypeIcons = {
+        '1': '<i class="fas fa-list-alt text-blue-600 mr-2"></i>', // Basic - A more professional list icon
+        '2': '<i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>', // Bug - A warning/alert style icon
+        '3': '<i class="fas fa-lightbulb text-green-600 mr-2"></i>',  // Feature - A lightbulb for innovation
+        'basic': '<i class="fas fa-list-alt text-blue-600 mr-2"></i>',
+        'bug': '<i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>',
+        'feature': '<i class="fas fa-lightbulb text-green-600 mr-2"></i>'
+    };
+
+    const taskTypeLabels = {
+        '1': 'Basic',
+        '2': 'Bug',
+        '3': 'Feature',
+        'basic': 'Basic',
+        'bug': 'Bug',
+        'feature': 'Feature'
+    };
+
+    // Convert task.type to string to ensure consistent mapping
+    const taskTypeString = String(task.type).toLowerCase();
+    
+    const taskIcon = taskTypeIcons[taskTypeString] || ''; // Default to Basic icon
+    const taskTypeLabel = taskTypeLabels[taskTypeString] || 'Basic';
+
     // Créer un conteneur modal avec l'ID de la tâche
     detailsModal.innerHTML = `
         <div class="modal-backdrop absolute inset-0 flex items-center justify-center">
@@ -155,7 +222,9 @@ function showTaskDetails(taskId) {
                 <div class="p-6 border-b border-gray-100">
                     <div class="flex justify-between items-start">
                         <div>
-                            <h2 class="text-2xl font-semibold text-gray-800">${task.title}</h2>
+                            <h2 class="text-2xl font-semibold text-gray-800 flex items-center">
+                                ${taskIcon} ${task.title}
+                            </h2>
                         </div>
                         <button 
                             onclick="hideModal(detailsModal)"
@@ -167,18 +236,46 @@ function showTaskDetails(taskId) {
                         </button>
                     </div>
                     <div class="flex items-center gap-4 mt-4">
-                        <span class="priority-${task.priority} text-white text-sm px-3 py-1 rounded-full">${mapPriorityToText(task.priority)}</span>
+                        <span class="priority-${task.priority} text-white text-sm px-3 py-1 rounded-full">
+                            ${mapPriorityToText(task.priority)}
+                        </span>
+                        <span class="task-type text-sm px-3 py-1 rounded-full bg-gray-200">
+                            ${taskIcon} ${taskTypeLabel}
+                        </span>
                         <span class="text-gray-400 text-sm">Due: ${task.dueDate}</span>
                     </div>
                 </div>
-                <div class="space-y-4">
+
+                <!-- Content -->
+                <div class="p-6 space-y-6">
+                    <!-- Description Section -->
                     <div>
                         <h3 class="text-sm font-medium text-gray-700 mb-2">Description</h3>
-                        <p class="text-gray-600">${task.description}</p></p>
-                        </div>
-                </div>
+                        <p class="text-gray-600">${task.description || 'No description provided'}</p>
+                    </div>
 
-                
+                    <!-- Task Details Section -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700">Status</h4>
+                            <p class="text-gray-600">${mapStatusToText(task.status)}</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700">Priority</h4>
+                            <p class="text-gray-600">${mapPriorityToText(task.priority)}</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700">Task Type</h4>
+                            <p class="text-gray-600">${taskIcon} ${taskTypeLabel}</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700">Due Date</h4>
+                            <p class="text-gray-600">${task.dueDate || 'No due date'}</p>
+                        </div>
+                    </div>
+
+                    
+                </div>
             </div>
         </div>
     `;
@@ -203,7 +300,6 @@ function mapPriorityToText(priority) {
         '1': 'Basse',
         '2': 'Moyenne',
         '3': 'Haute',
-        '4': 'Urgente'
     };
     return priorityMap[priority] || 'Basse';
 }
@@ -244,7 +340,8 @@ function loadTasks() {
                     description: task.description || '',
                     priority: task.priority, // Garder le numéro de priorité
                     status: mapStatusToText(task.status),
-                    dueDate: task.due_date
+                    dueDate: task.due_date,
+                    type: task.type
                 });
             });
         } else {
