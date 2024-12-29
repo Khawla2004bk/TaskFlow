@@ -15,15 +15,11 @@ try {
         throw new Exception('Non authentifié');
     }
 
-    // Vérifier si l'utilisateur est un admin (rôle 1)
+    // Vérifier le rôle de l'utilisateur qui assigne
     $pdo = DatabaseConfig::getConnection();
     $stmt = $pdo->prepare("SELECT role FROM Users WHERE id = ?");
     $stmt->execute([$_SESSION['user_id']]);
-    $userRole = $stmt->fetchColumn();
-
-    if ($userRole != 1) {
-        throw new Exception('Seul un admin peut assigner des tâches');
-    }
+    $assignerRole = $stmt->fetchColumn();
 
     $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
     $taskId = filter_input(INPUT_POST, 'task_id', FILTER_VALIDATE_INT);
@@ -36,6 +32,22 @@ try {
     
     if (!$user) {
         throw new Exception('Utilisateur non trouvé');
+    }
+
+    // Vérifier le rôle de l'utilisateur à qui la tâche est assignée
+    $stmt = $pdo->prepare("SELECT role FROM Users WHERE id = ?");
+    $stmt->execute([$user->getId()]);
+    $assignedUserRole = $stmt->fetchColumn();
+
+    // Logique de vérification des rôles
+    if ($assignerRole == 1) {
+        // Si l'assigneur est un admin
+        if ($assignedUserRole == 1) {
+            throw new Exception('Un admin ne peut pas assigner une tâche à un autre admin');
+        }
+    } else {
+        // Si l'assigneur n'est pas un admin, il ne devrait pas pouvoir assigner du tout
+        throw new Exception('Seul un admin peut assigner des tâches');
     }
 
     $task = Task::getById($taskId);
