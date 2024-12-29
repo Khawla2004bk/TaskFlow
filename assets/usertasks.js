@@ -103,7 +103,7 @@ Object.values(columns).forEach(column => {
             const taskId = draggingTask.dataset.id;
 
             // Envoyer une requête pour mettre à jour le statut
-            fetch('../api/update_task_status.php', {
+            fetch('api/update_task_status.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

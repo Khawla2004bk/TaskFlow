@@ -1,0 +1,79 @@
+[2024-12-29 11:43:10] Données POST reçues : Array
+(
+    [task_id] => 2
+    [new_status] => 3
+)
+
+[2024-12-29 11:43:10] Session utilisateur : Array
+(
+    [user_id] => 28
+    [user_role] => 2
+    [csrf_token] => 96a12b5375caa0ac333b632a2dcc624678076c75e7ab4baf018f2db02ffe6543
+)
+
+[2024-12-29 11:43:10] Tentative de mise à jour - TaskId: 2, Nouveau statut: 3, Utilisateur: 28
+[2024-12-29 11:43:10] Utilisateurs associés à la tâche : Array
+(
+    [0] => Array
+        (
+            [created_by] => 1
+            [user_id] => 3
+        )
+
+    [1] => Array
+        (
+            [created_by] => 1
+            [user_id] => 28
+        )
+
+)
+
+[2024-12-29 11:43:10] Type de tâche : 2
+[2024-12-29 11:43:10] Workflow autorisé : Array
+(
+    [0] => backlog
+    [1] => in_progress
+    [2] => review
+    [3] => done
+)
+
+[2024-12-29 11:43:10] Erreur : Transition de statut non autorisée - Nouveau statut: 3
+[2024-12-29 11:44:23] Données POST reçues : Array
+(
+    [task_id] => 2
+    [new_status] => 3
+)
+
+[2024-12-29 11:44:23] Session utilisateur : Array
+(
+    [user_id] => 1
+    [user_role] => 1
+)
+
+[2024-12-29 11:44:23] Tentative de mise à jour - TaskId: 2, Nouveau statut: 3, Utilisateur: 1
+[2024-12-29 11:44:23] Utilisateurs associés à la tâche : Array
+(
+    [0] => Array
+        (
+            [created_by] => 1
+            [user_id] => 3
+        )
+
+    [1] => Array
+        (
+            [created_by] => 1
+            [user_id] => 28
+        )
+
+)
+
+[2024-12-29 11:44:23] Type de tâche : 2
+[2024-12-29 11:44:23] Workflow autorisé : Array
+(
+    [0] => backlog
+    [1] => in_progress
+    [2] => review
+    [3] => done
+)
+
+[2024-12-29 11:44:23] Erreur : Transition de statut non autorisée - Nouveau statut: 3

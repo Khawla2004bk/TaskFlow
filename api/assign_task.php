@@ -10,8 +10,19 @@ try {
 
     session_start();
 
+    // Vérifier si l'utilisateur est connecté
     if (!isset($_SESSION['user_id'])) {
         throw new Exception('Non authentifié');
+    }
+
+    // Vérifier si l'utilisateur est un admin (rôle 1)
+    $pdo = DatabaseConfig::getConnection();
+    $stmt = $pdo->prepare("SELECT role FROM Users WHERE id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    $userRole = $stmt->fetchColumn();
+
+    if ($userRole != 1) {
+        throw new Exception('Seul un admin peut assigner des tâches');
     }
 
     $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
