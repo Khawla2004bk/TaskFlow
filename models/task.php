@@ -5,6 +5,7 @@ require_once 'TaskType.php';
 class Task {
     public const DEFAULT_PRIORITY = 1;
     public const DEFAULT_STATUS = 1;
+    public const DEFAULT_TYPE = 1;
 
     private ?int $id;
     private string $title;
