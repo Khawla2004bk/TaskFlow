@@ -93,7 +93,7 @@ body {
 .container {
     max-width: 1200px;
     margin: 6rem auto 2rem;
-    padding: 0 2rem;
+    /* padding: 0 2rem; */
 }
 
 .title {
