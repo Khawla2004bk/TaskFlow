@@ -29,12 +29,29 @@ $newStatus = (int)$_POST['new_status'];
 try {
     $pdo = DatabaseConfig::getConnection();
     
-    // Vérifier que l'utilisateur a le droit de modifier la tâche
-    $stmt = $pdo->prepare("SELECT created_by FROM Tasks WHERE id = ?");
-    $stmt->execute([$taskId]);
-    $createdBy = $stmt->fetchColumn();
+    // Vérifier les détails de la tâche
+    $stmt = $pdo->prepare("
+        SELECT created_by, 
+               (SELECT COUNT(*) FROM UsersTasks WHERE task_id = Tasks.id AND user_id = ?) as is_assigned
+        FROM Tasks 
+        WHERE id = ?
+    ");
+    $stmt->execute([$_SESSION['user_id'], $taskId]);
+    $taskDetails = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($createdBy != $_SESSION['user_id']) {
+    // Vérifier le rôle de l'utilisateur
+    $roleStmt = $pdo->prepare("SELECT role FROM Users WHERE id = ?");
+    $roleStmt->execute([$_SESSION['user_id']]);
+    $userRole = $roleStmt->fetchColumn();
+
+    // Conditions pour modifier le statut :
+    // 1. L'utilisateur est un admin (rôle 1)
+    // 2. L'utilisateur a créé la tâche
+    // 3. La tâche est assignée à l'utilisateur
+    if ($userRole != 1 && 
+        $taskDetails['created_by'] != $_SESSION['user_id'] && 
+        $taskDetails['is_assigned'] == 0) {
+        
         echo json_encode([
             'success' => false, 
             'message' => 'Vous n\'avez pas le droit de modifier cette tâche'
