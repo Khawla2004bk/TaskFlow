@@ -3,7 +3,6 @@ include_once __DIR__ . '/../config/session.php';
 include_once __DIR__ . '/../config/connexion.php';
 include_once __DIR__ . '/../config/helper.php';
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,6 +13,7 @@ include_once __DIR__ . '/../config/helper.php';
     <link rel="stylesheet" href="assets/style.css">
     <link rel="stylesheet" href="assets/showtask.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
 </head>
     <header class="header">

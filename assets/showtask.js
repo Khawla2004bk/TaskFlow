@@ -34,15 +34,53 @@ function createTaskElement(task) {
         '3': 'Haute',
     };
     
+    // Mapping des icônes pour les types de tâches
+    const taskTypeIcons = {
+        '1': '<i class="fas fa-list-alt text-blue-600 mr-2"></i>', // Basic - A more professional list icon
+        '2': '<i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>', // Bug - A warning/alert style icon
+        '3': '<i class="fas fa-lightbulb text-green-600 mr-2"></i>',  // Feature - A lightbulb for innovation
+        'basic': '<i class="fas fa-list-alt text-blue-600 mr-2"></i>',
+        'bug': '<i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>',
+        'feature': '<i class="fas fa-lightbulb text-green-600 mr-2"></i>'
+    };
+
+    const taskTypeLabels = {
+        '1': 'Basic',
+        '2': 'Bug',
+        '3': 'Feature',
+        'basic': 'Basic',
+        'bug': 'Bug',
+        'feature': 'Feature'
+    };
+
+    // Convert task.type to string to ensure consistent mapping
+    const taskTypeString = String(task.type).toLowerCase();
+    
+    const taskIcon = taskTypeIcons[taskTypeString] || ''; // Default to Basic icon
+    const taskTypeLabel = taskTypeLabels[taskTypeString] || 'Basic';
+
+    // Fonction pour tronquer la description
+    function truncateDescription(description, maxLength = 50) {
+        if (!description) return '';
+        return description.length > maxLength 
+            ? description.substring(0, maxLength) + '...' 
+            : description;
+    }
+
     taskEl.innerHTML = `
-        <div id="header">
-        <h3 class="task-title">${task.title}</h3>
-        <a><img src="images/icon.png" id="icon" alt="" onclick="showTaskDetails(${task.id})"></a>
+        <div id="header" class="flex justify-between items-center">
+            <h3 class="task-title flex items-center">
+                ${taskIcon} ${task.title}
+            </h3>
+            <a><img src="images/icon.png" id="icon" alt="" onclick="showTaskDetails(${task.id})"></a>
         </div>
-        <p class="task-description">${task.description}</p>
-        <div class="task-meta">
-            <span class="priority priority-${task.priority}">${priorityTextMap[task.priority] || 'Basse'}</span>
-            <span>${task.dueDate}</span>
+        <p class="task-description text-gray-600 italic">
+            ${truncateDescription(task.description)}
+        </p>
+        <div class="task-meta flex justify-between items-center">
+            <span class="priority priority-${task.priority}">${mapPriorityToText(task.priority) || 'Basse'}</span>
+            <span class="task-type flex items-center">${taskIcon} ${taskTypeLabel}</span>
+            <span>${task.dueDate || ''}</span>
         </div>
     `;
 
@@ -155,12 +193,12 @@ function showTaskDetails(taskId) {
 
     // Mapping des types de tâches
     const taskTypeIcons = {
-        '1': '', // Basic
-        '2': '', // Bug
-        '3': '',  // Feature
-        'basic': '', // Basic
-        'bug': '', // Bug
-        'feature': ''  // Feature
+        '1': '<i class="fas fa-list-alt text-blue-600 mr-2"></i>', // Basic - A more professional list icon
+        '2': '<i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>', // Bug - A warning/alert style icon
+        '3': '<i class="fas fa-lightbulb text-green-600 mr-2"></i>',  // Feature - A lightbulb for innovation
+        'basic': '<i class="fas fa-list-alt text-blue-600 mr-2"></i>',
+        'bug': '<i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>',
+        'feature': '<i class="fas fa-lightbulb text-green-600 mr-2"></i>'
     };
 
     const taskTypeLabels = {
@@ -203,7 +241,7 @@ function showTaskDetails(taskId) {
                             ${mapPriorityToText(task.priority)}
                         </span>
                         <span class="task-type text-sm px-3 py-1 rounded-full bg-gray-200">
-                            ${taskTypeLabel}
+                            ${taskIcon} ${taskTypeLabel}
                         </span>
                         <span class="text-gray-400 text-sm">Due: ${task.dueDate}</span>
                     </div>
@@ -250,7 +288,7 @@ function showTaskDetails(taskId) {
                         </div>
                         <div>
                             <h4 class="text-sm font-medium text-gray-700">Task Type</h4>
-                            <p class="text-gray-600">${taskTypeLabel}</p>
+                            <p class="text-gray-600">${taskIcon} ${taskTypeLabel}</p>
                         </div>
                         <div>
                             <h4 class="text-sm font-medium text-gray-700">Due Date</h4>
