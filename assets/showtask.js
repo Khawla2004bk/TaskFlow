@@ -50,13 +50,16 @@ function createTaskElement(task) {
 }
 
 function addTask(task) {
-    tasks.push(task);
-    const taskEl = createTaskElement(task);
+    const taskElement = createTaskElement(task);
     
-    const targetColumn = mapStatusToColumn(task.status);
-    targetColumn.appendChild(taskEl);
+    // Determine the correct column based on the task's status
+    const column = mapStatusToColumn(task.status);
     
-    setupDragAndDrop(taskEl);
+    if (column) {
+        column.appendChild(taskElement);
+        setupDragAndDrop(taskElement);
+        tasks.push(task);
+    }
 }
 
 function setupDragAndDrop(element) {
@@ -117,8 +120,6 @@ Object.values(columns).forEach(column => {
                 // }
             })
             .catch(error => {});
-
-            draggingTask.classList.remove('dragging');
         });
     }
 });
@@ -148,6 +149,35 @@ function showTaskDetails(taskId) {
         return;
     }
 
+    // Debug logging for task type
+    console.log('Task Type Raw:', task.type);
+    console.log('Task Type typeof:', typeof task.type);
+
+    // Mapping des types de tâches
+    const taskTypeIcons = {
+        '1': '', // Basic
+        '2': '', // Bug
+        '3': '',  // Feature
+        'basic': '', // Basic
+        'bug': '', // Bug
+        'feature': ''  // Feature
+    };
+
+    const taskTypeLabels = {
+        '1': 'Basic',
+        '2': 'Bug',
+        '3': 'Feature',
+        'basic': 'Basic',
+        'bug': 'Bug',
+        'feature': 'Feature'
+    };
+
+    // Convert task.type to string to ensure consistent mapping
+    const taskTypeString = String(task.type).toLowerCase();
+    
+    const taskIcon = taskTypeIcons[taskTypeString] || ''; // Default to Basic icon
+    const taskTypeLabel = taskTypeLabels[taskTypeString] || 'Basic';
+
     // Créer un conteneur modal avec l'ID de la tâche
     detailsModal.innerHTML = `
         <div class="modal-backdrop absolute inset-0 flex items-center justify-center">
@@ -155,7 +185,9 @@ function showTaskDetails(taskId) {
                 <div class="p-6 border-b border-gray-100">
                     <div class="flex justify-between items-start">
                         <div>
-                            <h2 class="text-2xl font-semibold text-gray-800">${task.title}</h2>
+                            <h2 class="text-2xl font-semibold text-gray-800 flex items-center">
+                                ${taskIcon} ${task.title}
+                            </h2>
                         </div>
                         <button 
                             onclick="hideModal(detailsModal)"
@@ -167,14 +199,17 @@ function showTaskDetails(taskId) {
                         </button>
                     </div>
                     <div class="flex items-center gap-4 mt-4">
-                        <span class="priority-${task.priority} text-white text-sm px-3 py-1 rounded-full">${mapPriorityToText(task.priority)}</span>
+                        <span class="priority-${task.priority} text-white text-sm px-3 py-1 rounded-full">
+                            ${mapPriorityToText(task.priority)}
+                        </span>
+                        <span class="task-type text-sm px-3 py-1 rounded-full bg-gray-200">
+                            ${taskTypeLabel}
+                        </span>
                         <span class="text-gray-400 text-sm">Due: ${task.dueDate}</span>
                     </div>
                 </div>
 
-                <!-- Content -->
-                <div class="p-6 space-y-6">
-                    <!-- Assignment Section -->
+                <!-- Assignment Section -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Assign to
@@ -187,19 +222,43 @@ function showTaskDetails(taskId) {
                                 class="custom-input w-full px-4 py-2 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none"
                             >
                             <button 
-                                onclick="assignTask()"
+                                onclick="assignTask(${taskId})"
                                 class="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors duration-200"
                             >
                                 Assign
                             </button>
                         </div>
                     </div>
-                </div>
-                <div class="space-y-4">
+
+                <!-- Content -->
+                <div class="p-6 space-y-6">
+                    <!-- Description Section -->
                     <div>
                         <h3 class="text-sm font-medium text-gray-700 mb-2">Description</h3>
-                        <p class="text-gray-600">${task.description}</p></p>
+                        <p class="text-gray-600">${task.description || 'No description provided'}</p>
+                    </div>
+
+                    <!-- Task Details Section -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700">Status</h4>
+                            <p class="text-gray-600">${mapStatusToText(task.status)}</p>
                         </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700">Priority</h4>
+                            <p class="text-gray-600">${mapPriorityToText(task.priority)}</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700">Task Type</h4>
+                            <p class="text-gray-600">${taskTypeLabel}</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700">Due Date</h4>
+                            <p class="text-gray-600">${task.dueDate || 'No due date'}</p>
+                        </div>
+                    </div>
+
+                    
                 </div>
             </div>
         </div>
@@ -266,7 +325,8 @@ function loadTasks() {
                     description: task.description || '',
                     priority: task.priority, // Garder le numéro de priorité
                     status: mapStatusToText(task.status),
-                    dueDate: task.due_date
+                    dueDate: task.due_date,
+                    type: task.type
                 });
             });
         } else {
@@ -297,7 +357,7 @@ taskForm.addEventListener('submit', e => {
         title: taskForm.title.value,
         description: taskForm.description.value || '',
         priority: taskForm.priority.value,
-        type: taskForm.type.value,
+        type: taskForm.type.value, // Ensure type is included
         dueDate: taskForm.dueDate.value || null,
         status: mapStatusToText(taskForm.status.value)
     };
@@ -347,12 +407,12 @@ document.getElementById('cancel').addEventListener('click',function(){
 
 });
 
-function assignTask() {
+function assignTask(taskId) {
     const assignEmailInput = document.getElementById('assignEmail');
     const email = assignEmailInput.value.trim();
     const detailsModal = document.getElementById('detailsModal');
     const modalContent = detailsModal.querySelector('.modal-content');
-    const taskId = modalContent ? parseInt(modalContent.dataset.taskId, 10) : null;
+    const task = tasks.find(t => t.id === taskId);
 
     console.log('Debug assignTask:', {
         email: email,

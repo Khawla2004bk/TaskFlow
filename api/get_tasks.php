@@ -31,6 +31,7 @@ try {
             'description' => $task->getDescription(),
             'priority' => $task->getPriority(), 
             'status' => $task->getStatus(),
+            'type' => $task->getType(),
             'due_date' => $task->getDueDate()->format('Y-m-d')
         ];
     }, $tasks);
